@@ -115,9 +115,68 @@
     <nav class="flex items-center gap-md">
         <div class="hidden lg:flex items-center gap-sm">
             <a class="text-primary font-bold border-b-2 border-primary px-2 py-1 text-label-md" href="/katalog">Beranda</a>
-            <a class="text-on-surface-variant hover:text-primary transition-colors text-label-md" href="#">Kategori</a>
+            <div class="relative group">
+                <a class="text-on-surface-variant hover:text-primary transition-colors text-label-md inline-flex items-center gap-1 px-2 py-1" href="#produk">
+                    Kategori
+                    <span class="material-symbols-outlined text-base transition-transform duration-200 group-hover:rotate-180">expand_more</span>
+                </a>
+                {{-- Jembatan tak kasat mata biar dropdown gak ketutup pas kursor digeser turun --}}
+                <div class="absolute left-0 top-full h-3 w-full"></div>
+                <div class="absolute left-0 top-full pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
+                    <div class="w-56 bg-white rounded-xl shadow-xl border border-surface-container-high p-2">
+                        <a href="#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md">
+                            <span class="material-symbols-outlined text-lg">apps</span> Semua Produk
+                        </a>
+                        <a href="#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md">
+                            <span class="material-symbols-outlined text-lg">bakery_dining</span> Makanan &amp; Camilan
+                        </a>
+                        <a href="#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md">
+                            <span class="material-symbols-outlined text-lg">checkroom</span> Kain &amp; Tenun
+                        </a>
+                        <a href="#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md">
+                            <span class="material-symbols-outlined text-lg">redeem</span> Kerajinan &amp; Souvenir
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="flex items-center gap-sm">
+            <div class="relative group">
+                <button type="button" class="relative p-2 hover:bg-primary-container/20 rounded-full transition-all duration-300 squishy-interaction inline-flex">
+                    <span class="material-symbols-outlined text-primary">notifications</span>
+                    @if($notifJumlahBelumDibaca > 0)
+                        <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-secondary text-white text-[10px] font-bold flex items-center justify-center">
+                            {{ $notifJumlahBelumDibaca > 9 ? '9+' : $notifJumlahBelumDibaca }}
+                        </span>
+                    @endif
+                </button>
+                {{-- Jembatan tak kasat mata biar dropdown gak ketutup pas kursor digeser turun --}}
+                <div class="absolute right-0 top-full h-3 w-full"></div>
+                <div class="absolute right-0 top-full pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
+                    <div class="w-80 bg-white rounded-xl shadow-xl border border-surface-container-high p-2 max-h-96 overflow-y-auto">
+                        <div class="px-3 py-2 flex items-center justify-between">
+                            <span class="text-label-md font-bold text-primary">Notifikasi</span>
+                            <a href="/notifikasi" class="text-label-sm text-secondary hover:underline">Lihat Semua</a>
+                        </div>
+                        @forelse($notifTerbaru as $notif)
+                            <div class="px-3 py-2.5 rounded-lg hover:bg-primary-container/10 transition-colors {{ $notif->dibaca ? '' : 'bg-primary-container/5' }}">
+                                <div class="flex items-start gap-2">
+                                    @if(!$notif->dibaca)
+                                        <span class="w-2 h-2 mt-1.5 rounded-full bg-secondary shrink-0"></span>
+                                    @endif
+                                    <div class="min-w-0">
+                                        <p class="text-label-sm font-bold text-on-surface">{{ $notif->judul }}</p>
+                                        <p class="text-label-sm text-on-surface-variant line-clamp-2">{{ $notif->pesan }}</p>
+                                        <p class="text-[10px] text-on-surface-variant/70 mt-1">{{ $notif->created_at->diffForHumans() }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="px-3 py-6 text-center text-on-surface-variant text-label-sm">Belum ada notifikasi.</div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
             <a href="/keranjang" class="relative p-2 hover:bg-primary-container/20 rounded-full transition-all duration-300 squishy-interaction inline-flex">
                 <span class="material-symbols-outlined text-primary">shopping_cart</span>
             </a>
@@ -185,47 +244,119 @@
     </section>
 
     <!-- Product Grid -->
-    <section id="produk" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
+    <section id="produk" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-md">
+        @php
+            // Kumpulan ulasan contoh (belum ada sistem review sungguhan di database),
+            // dirotasi per produk supaya tiap kartu tampil beda.
+            $kumpulanUlasan = [
+                [
+                    ['nama' => 'Rina S.', 'rating' => 5, 'komentar' => 'Kualitasnya bagus banget, packingnya juga rapi. Recommended!'],
+                    ['nama' => 'Budi P.', 'rating' => 4, 'komentar' => 'Rasanya enak, pengiriman agak lama tapi worth it.'],
+                    ['nama' => 'Sari W.', 'rating' => 5, 'komentar' => 'Sudah kedua kalinya order di sini, selalu puas.'],
+                ],
+                [
+                    ['nama' => 'Andi K.', 'rating' => 4, 'komentar' => 'Barang sesuai deskripsi, harga juga worth it.'],
+                    ['nama' => 'Maya L.', 'rating' => 5, 'komentar' => 'Suka banget, jadi oleh-oleh favorit keluarga.'],
+                    ['nama' => 'Dedi H.', 'rating' => 4, 'komentar' => 'Pengemasan aman, kualitas barangnya oke.'],
+                ],
+                [
+                    ['nama' => 'Fitri A.', 'rating' => 5, 'komentar' => 'Wangi dan segar, langsung habis dimakan sekeluarga.'],
+                    ['nama' => 'Hendra T.', 'rating' => 3, 'komentar' => 'Cukup bagus, tapi pengiriman bisa lebih cepat.'],
+                    ['nama' => 'Nina P.', 'rating' => 5, 'komentar' => 'Top banget, bakal order lagi buat oleh-oleh.'],
+                ],
+            ];
+        @endphp
         @forelse($all_barang as $item)
-        <div class="product-card group bg-white rounded-lg p-sm shadow-[0_10px_30px_rgba(126,34,206,0.05)] transition-all duration-500 flex flex-col border border-surface-container-high">
-            <div class="relative rounded-lg overflow-hidden mb-md aspect-square bg-surface-container-low">
+        @php
+            $ulasanProduk = $kumpulanUlasan[$item->id % count($kumpulanUlasan)];
+            $ratingRataRata = round(collect($ulasanProduk)->avg('rating'), 1);
+        @endphp
+        <div class="product-card group bg-white rounded-lg p-2 shadow-[0_10px_30px_rgba(126,34,206,0.05)] transition-all duration-500 flex flex-col border border-surface-container-high cursor-pointer"
+             onclick="bukaModalProduk({{ $item->id }})">
+            <div class="relative rounded-lg overflow-hidden mb-2 aspect-square bg-surface-container-low">
                 @if($item->foto)
                     <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" src="{{ Storage::url($item->foto) }}" alt="{{ $item->nama_barang }}">
                 @else
                     <div class="w-full h-full flex items-center justify-center text-on-surface-variant text-label-sm">Belum ada foto</div>
                 @endif
-                {{-- 4. Label "Local Fav / Premium Art / dll" sudah dihapus dari kartu produk --}}
-            </div>
-            <div class="flex-1 px-2">
-                <h3 class="text-body-lg font-bold mb-1 group-hover:text-primary transition-colors">{{ $item->nama_barang }}</h3>
-                @if($item->deskripsi)
-                    <p class="text-label-sm text-on-surface-variant mb-md">{{ $item->deskripsi }}</p>
+                @if($item->stok <= 0)
+                    <div class="absolute inset-0 bg-white/70 flex items-center justify-center">
+                        <span class="text-label-sm text-red-600 font-bold">Stok Habis</span>
+                    </div>
                 @endif
-                <div class="flex items-center gap-1 mb-md">
-                    <span class="text-secondary font-black text-headline-md">Rp {{ number_format($item->harga) }}</span>
+            </div>
+            <div class="px-1 pb-1">
+                <h3 class="text-label-md font-bold leading-snug mb-1 line-clamp-2 group-hover:text-primary transition-colors">{{ $item->nama_barang }}</h3>
+                <span class="text-secondary font-black text-body-md">Rp {{ number_format($item->harga) }}</span>
+            </div>
+        </div>
+
+        <!-- Modal Detail Produk -->
+        <div id="modal-produk-{{ $item->id }}" class="hidden fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm items-center justify-center p-4" onclick="tutupModalJikaBackdrop(event, {{ $item->id }})">
+            <div class="bg-white rounded-lg w-full max-w-lg max-h-[90vh] overflow-y-auto p-lg relative" onclick="event.stopPropagation()">
+                <button type="button" onclick="tutupModalProduk({{ $item->id }})" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-surface-container-low flex items-center justify-center hover:bg-surface-container-high transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+
+                <div class="rounded-lg overflow-hidden mb-md aspect-square bg-surface-container-low">
+                    @if($item->foto)
+                        <img class="w-full h-full object-cover" src="{{ Storage::url($item->foto) }}" alt="{{ $item->nama_barang }}">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center text-on-surface-variant text-label-sm">Belum ada foto</div>
+                    @endif
                 </div>
-                <div class="mb-md">
+
+                <h3 class="text-headline-md font-bold mb-1">{{ $item->nama_barang }}</h3>
+
+                <div class="flex items-center gap-2 mb-md">
+                    <span class="text-yellow-500 text-label-md">{{ str_repeat('★', (int) floor($ratingRataRata)) }}{{ str_repeat('☆', 5 - (int) floor($ratingRataRata)) }}</span>
+                    <span class="text-label-sm text-on-surface-variant">{{ $ratingRataRata }} ({{ count($ulasanProduk) }} ulasan)</span>
+                </div>
+
+                @if($item->deskripsi)
+                    <p class="text-body-md text-on-surface-variant mb-md">{{ $item->deskripsi }}</p>
+                @endif
+
+                <div class="flex items-center justify-between mb-md">
+                    <span class="text-secondary font-black text-headline-md">Rp {{ number_format($item->harga) }} <span class="text-label-sm font-normal text-on-surface-variant">/pcs</span></span>
                     @if($item->stok > 0)
                         <span class="text-label-sm text-on-surface-variant">Tersedia: {{ $item->stok }} pcs</span>
                     @else
                         <span class="text-label-sm text-red-600 font-bold">Stok Habis</span>
                     @endif
                 </div>
-            </div>
 
-            @if($item->stok > 0)
-                <form action="/keranjang/tambah/{{ $item->id }}" method="POST" class="mt-auto">
-                    @csrf
-                    <input type="number" name="jumlah" value="1" min="1" max="{{ $item->stok }}" class="w-full mb-2 border-2 border-surface-container-high rounded-full px-4 py-2 text-label-md outline-none focus:border-primary">
-                    <button type="submit" class="w-full bg-primary text-white rounded-full py-4 font-bold flex items-center justify-center gap-sm hover:bg-primary-container shadow-md transition-all duration-300 squishy-interaction">
-                        Tambah ke Keranjang 🛍️
+                @if($item->stok > 0)
+                    <form action="/keranjang/tambah/{{ $item->id }}" method="POST" class="mb-lg">
+                        @csrf
+                        <div class="flex gap-2">
+                            <input type="number" name="jumlah" value="1" min="1" max="{{ $item->stok }}" class="w-24 border-2 border-surface-container-high rounded-full px-4 py-2 text-label-md outline-none focus:border-primary">
+                            <button type="submit" class="flex-1 bg-primary text-white rounded-full py-3 font-bold flex items-center justify-center gap-sm hover:bg-primary-container shadow-md transition-all duration-300 squishy-interaction">
+                                Tambah ke Keranjang 🛍️
+                            </button>
+                        </div>
+                    </form>
+                @else
+                    <button class="w-full bg-surface-container-high text-on-surface-variant rounded-full py-3 font-bold mb-lg cursor-not-allowed" disabled>
+                        Habis Terjual
                     </button>
-                </form>
-            @else
-                <button class="w-full bg-surface-container-high text-on-surface-variant rounded-full py-4 font-bold mt-auto cursor-not-allowed" disabled>
-                    Habis Terjual
-                </button>
-            @endif
+                @endif
+
+                <div class="border-t border-surface-container-high pt-md">
+                    <h4 class="text-label-md font-bold text-primary uppercase tracking-wider mb-sm">Ulasan Pembeli</h4>
+                    <div class="max-h-48 overflow-y-auto space-y-3 pr-1">
+                        @foreach($ulasanProduk as $review)
+                            <div class="bg-surface-container-low rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-bold text-label-md">{{ $review['nama'] }}</span>
+                                    <span class="text-yellow-500 text-label-sm">{{ str_repeat('★', $review['rating']) }}{{ str_repeat('☆', 5 - $review['rating']) }}</span>
+                                </div>
+                                <p class="text-label-sm text-on-surface-variant">{{ $review['komentar'] }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
         </div>
         @empty
         <p class="col-span-full text-center text-on-surface-variant py-xl">Belum ada produk tersedia.</p>
@@ -235,37 +366,27 @@
 
 <!-- Footer -->
 <footer class="bg-surface-container-low py-xl mt-xl">
-    <div class="max-w-7xl mx-auto px-md grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg text-center md:text-left">
+    <div class="max-w-7xl mx-auto px-md grid grid-cols-1 md:grid-cols-2 gap-lg text-center md:text-left">
         <div class="space-y-sm">
             <span class="text-headline-md font-black text-primary">PaluKita</span>
             <p class="text-body-md text-on-surface-variant">Toko oleh-oleh favoritmu yang menghadirkan kehangatan khas kota Palu langsung ke pintu rumahmu.</p>
         </div>
         <div class="space-y-base">
-            <h4 class="text-label-md font-bold text-primary uppercase tracking-wider">Tautan Cepat</h4>
-            <ul class="space-y-xs text-on-surface-variant">
-                <li><a class="hover:text-primary transition-colors underline text-label-sm" href="#">Tentang Kami</a></li>
-                <li><a class="hover:text-primary transition-colors underline text-label-sm" href="#">Hubungi Kami</a></li>
-                <li><a class="hover:text-primary transition-colors underline text-label-sm" href="#">Pengiriman</a></li>
+            <h4 class="text-label-md font-bold text-primary uppercase tracking-wider">Hubungi Kami</h4>
+            <ul class="space-y-xs text-on-surface-variant text-label-sm">
+                <li class="flex items-center justify-center md:justify-start gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">location_on</span>
+                    Jl. Diponegoro No. 10, Palu, Sulawesi Tengah
+                </li>
+                <li class="flex items-center justify-center md:justify-start gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">call</span>
+                    0812-3456-7890 (WhatsApp)
+                </li>
+                <li class="flex items-center justify-center md:justify-start gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">mail</span>
+                    halo@palukita.id
+                </li>
             </ul>
-        </div>
-        <div class="space-y-base">
-            <h4 class="text-label-md font-bold text-primary uppercase tracking-wider">Bantuan</h4>
-            <ul class="space-y-xs text-on-surface-variant">
-                <li><a class="hover:text-primary transition-colors underline text-label-sm" href="/keranjang">Keranjang Saya</a></li>
-                <li><a class="hover:text-primary transition-colors underline text-label-sm" href="#">Syarat &amp; Ketentuan</a></li>
-                <li><a class="hover:text-primary transition-colors underline text-label-sm" href="#">Kebijakan Privasi</a></li>
-            </ul>
-        </div>
-        <div class="space-y-base">
-            <h4 class="text-label-md font-bold text-primary uppercase tracking-wider">Ikuti Kami</h4>
-            <div class="flex justify-center md:justify-start gap-sm">
-                <button class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all duration-300">
-                    <span class="material-symbols-outlined">public</span>
-                </button>
-                <button class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all duration-300">
-                    <span class="material-symbols-outlined">chat</span>
-                </button>
-            </div>
         </div>
     </div>
     <div class="max-w-7xl mx-auto px-md mt-xl pt-lg border-t border-surface-container-high text-center text-label-sm text-on-surface-variant">
@@ -284,6 +405,23 @@
             nav.classList.add('top-4', 'w-[95%]', 'rounded-full');
         }
     });
+
+    // Buka/tutup modal detail produk (foto, deskripsi, harga, & ulasan)
+    function bukaModalProduk(id) {
+        document.getElementById('modal-produk-' + id)?.classList.remove('hidden');
+        document.getElementById('modal-produk-' + id)?.classList.add('flex');
+        document.body.classList.add('overflow-hidden');
+    }
+    function tutupModalProduk(id) {
+        document.getElementById('modal-produk-' + id)?.classList.add('hidden');
+        document.getElementById('modal-produk-' + id)?.classList.remove('flex');
+        document.body.classList.remove('overflow-hidden');
+    }
+    function tutupModalJikaBackdrop(event, id) {
+        if (event.target === event.currentTarget) {
+            tutupModalProduk(id);
+        }
+    }
 </script>
 </body>
 </html>

@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminTransaksiController;
 use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\NotifikasiController;
 
 // 1. HALAMAN AWAL — LANGSUNG KE LOGIN
 Route::get('/', function () {
@@ -41,6 +42,11 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/keranjang/{id}', [KeranjangController::class, 'hapus']);
     Route::post('/keranjang/checkout', [KeranjangController::class, 'checkout']);
 
+    // NOTIFIKASI PESANAN & PENGIRIMAN
+    Route::get('/notifikasi', [NotifikasiController::class, 'index']);
+    Route::post('/notifikasi/{notifikasi}/baca', [NotifikasiController::class, 'tandaiDibaca']);
+    Route::post('/notifikasi/baca-semua', [NotifikasiController::class, 'tandaiSemuaDibaca']);
+
     // AREA ADMIN (proteksi role Admin dilakukan lewat middleware di controller)
     Route::get('/admin/dashboard', [AdminTransaksiController::class, 'index']);
     Route::get('/admin/pelanggan', [AdminTransaksiController::class, 'pelanggan']);
@@ -48,6 +54,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/produk/tambah', [AdminTransaksiController::class, 'tambahProduk']);
     Route::post('/admin/produk/{barang}', [AdminTransaksiController::class, 'updateProduk']);
     Route::delete('/admin/produk/{barang}', [AdminTransaksiController::class, 'hapusProduk']);
-    Route::post('/admin/transaksi/input', [AdminTransaksiController::class, 'inputTransaksi']);
     Route::post('/admin/transaksi/{transaksi}/proses', [AdminTransaksiController::class, 'prosesPesanan']);
 });

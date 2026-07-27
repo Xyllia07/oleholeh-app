@@ -162,14 +162,8 @@
         @if(session('success_produk'))
             <div class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-6 py-4 rounded-xl font-semibold text-sm soft-shadow">✨ {{ session('success_produk') }}</div>
         @endif
-        @if(session('success_transaksi'))
-            <div class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-6 py-4 rounded-xl font-semibold text-sm soft-shadow">🛒 {{ session('success_transaksi') }}</div>
-        @endif
         @if(session('success_pesanan'))
             <div class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-6 py-4 rounded-xl font-semibold text-sm soft-shadow">📦 {{ session('success_pesanan') }}</div>
-        @endif
-        @if($errors->has('transaksi_error'))
-            <div class="bg-error-container text-on-error-container px-6 py-4 rounded-xl font-semibold text-sm soft-shadow">⚠️ {{ $errors->first('transaksi_error') }}</div>
         @endif
 
         <!-- Section A: Stats -->
@@ -226,6 +220,9 @@
                                 </div>
                                 <div class="min-w-0">
                                     <p class="text-sm font-bold text-on-surface">#INV-{{ str_pad($pesanan->id, 5, '0', STR_PAD_LEFT) }} &bull; {{ $pesanan->nama_pembeli }}</p>
+                                    @if($pesanan->nomor_hp)
+                                        <p class="text-xs text-on-surface-variant">📱 {{ $pesanan->nomor_hp }}</p>
+                                    @endif
                                     <p class="text-xs text-on-surface-variant truncate">{{ $daftarItem }}</p>
                                 </div>
                             </div>
@@ -387,7 +384,7 @@
             </div>
         </section>
 
-        <!-- Section D: Tambah Produk & Kasir Manual -->
+        <!-- Section D: Tambah Produk -->
         <section id="tambah-produk" class="grid grid-cols-1 lg:grid-cols-2 gap-lg scroll-mt-24">
             <div class="bg-surface-container-lowest p-lg rounded-xl soft-shadow">
                 <h4 class="text-xl text-primary font-bold mb-lg">Tambah Master Barang</h4>
@@ -416,36 +413,6 @@
                         <input type="file" name="foto" accept="image/*" class="w-full text-sm">
                     </div>
                     <button type="submit" class="w-full bg-primary text-on-primary py-3 rounded-full text-sm font-semibold hover:scale-[1.01] active:scale-95 transition-transform">Simpan ke Katalog</button>
-                </form>
-            </div>
-
-            <div class="bg-surface-container-lowest p-lg rounded-xl soft-shadow">
-                <h4 class="text-xl text-primary font-bold mb-lg">Mesin Kasir &mdash; Nota Penjualan Langsung</h4>
-                <form action="/admin/transaksi/input" method="POST" class="space-y-4">
-                    @csrf
-                    <div>
-                        <label class="block text-xs font-semibold text-on-surface-variant mb-1">Pilih Barang Belanjaan</label>
-                        <select name="barang_id" required class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
-                            @foreach($all_barang as $item)
-                                <option value="{{ $item->id }}">#{{ $item->id }} &mdash; {{ $item->nama_barang }} (Rp {{ number_format($item->harga) }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-on-surface-variant mb-1">Kuantitas</label>
-                            <input type="number" name="jumlah" value="1" required min="1" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-on-surface-variant mb-1">Nama Pembeli</label>
-                            <input type="text" name="nama_pembeli" required placeholder="Nama di kasir" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-on-surface-variant mb-1">Alamat / Catatan (opsional)</label>
-                        <input type="text" name="alamat_pengiriman" placeholder="Kosongkan jika beli langsung di toko" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
-                    </div>
-                    <button type="submit" class="w-full bg-tertiary-container text-on-tertiary-container py-3 rounded-full text-sm font-semibold hover:scale-[1.01] active:scale-95 transition-transform">Proses &amp; Kurangi Stok</button>
                 </form>
             </div>
         </section>

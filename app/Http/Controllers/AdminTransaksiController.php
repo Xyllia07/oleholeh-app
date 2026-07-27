@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Barang;
+use App\Models\Notifikasi;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
 use App\Models\User;
@@ -77,6 +78,24 @@ class AdminTransaksiController extends Controller implements HasMiddleware
 
         $statusBaru = $urutanStatus[$transaksi->status];
         $transaksi->update(['status' => $statusBaru]);
+
+        // Kirim notifikasi ke pembeli supaya progres pesanannya bisa dipantau
+        if ($transaksi->user_id) {
+            $judulNotif = $statusBaru === 'diproses'
+                ? 'Pesanan Sedang Diproses 📦'
+                : 'Pesanan Selesai & Siap Dikirim 🚀';
+
+            $pesanNotif = $statusBaru === 'diproses'
+                ? 'Pesanan #INV-' . str_pad($transaksi->id, 5, '0', STR_PAD_LEFT) . ' sedang disiapkan oleh toko.'
+                : 'Pesanan #INV-' . str_pad($transaksi->id, 5, '0', STR_PAD_LEFT) . ' sudah selesai dikemas dan segera dikirim ke alamatmu!';
+
+            Notifikasi::create([
+                'user_id'      => $transaksi->user_id,
+                'transaksi_id' => $transaksi->id,
+                'judul'        => $judulNotif,
+                'pesan'        => $pesanNotif,
+            ]);
+        }
 
         $pesan = $statusBaru === 'diproses'
             ? "Pesanan #{$transaksi->id} ditandai sedang diproses."
@@ -188,49 +207,5 @@ class AdminTransaksiController extends Controller implements HasMiddleware
         $barang->delete();
 
         return redirect('/admin/dashboard#katalog-inventory')->with('success_produk', 'Barang "' . $nama . '" berhasil dihapus dari katalog.');
-    }
-
-    public function inputTransaksi(Request $request)
-    {
-        $request->validate([
-            'barang_id'         => 'required|exists:barangs,id',
-            'jumlah'            => 'required|integer|min:1',
-            'nama_pembeli'      => 'required|string|max:255',
-            'alamat_pengiriman' => 'nullable|string',
-        ]);
-
-        // Membungkus query dalam DB Transaction untuk menjaga integritas data keuangan
-        return DB::transaction(function () use ($request) {
-            $barang = Barang::lockForUpdate()->find($request->barang_id);
-
-            // Validasi aturan bisnis: Cek stok fisik di toko
-            if ($barang->stok < $request->jumlah) {
-                return back()->withErrors(['transaksi_error' => 'Stok barang tidak mencukupi untuk jumlah tersebut.']);
-            }
-
-            $totalHarga = $barang->harga * $request->jumlah;
-
-            // Memasukkan data ke tabel master transaksi (dianggap selesai karena dilayani langsung di toko)
-            $transaksi = Transaksi::create([
-                'user_id'           => auth()->id(), // Mencatat id admin yang sedang aktif memproses
-                'nama_pembeli'      => $request->nama_pembeli,
-                'alamat_pengiriman' => $request->alamat_pengiriman ?: 'Pembelian langsung di toko',
-                'total_harga'       => $totalHarga,
-                'status'            => 'selesai',
-            ]);
-
-            // Memasukkan data ke tabel rincian item nota belanja
-            TransaksiDetail::create([
-                'transaksi_id' => $transaksi->id,
-                'barang_id'    => $barang->id,
-                'jumlah'       => $request->jumlah,
-                'harga_satuan' => $barang->harga,
-            ]);
-
-            // Mengurangi kapasitas stok barang induk
-            $barang->decrement('stok', $request->jumlah);
-
-            return redirect('/admin/dashboard')->with('success_transaksi', 'Nota Penjualan senilai Rp ' . number_format($totalHarga) . ' berhasil diproses!');
-        });
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\Keranjang;
+use App\Models\Notifikasi;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
 use Illuminate\Http\Request;
@@ -72,6 +73,7 @@ class KeranjangController extends Controller
     {
         $request->validate([
             'nama_pembeli'      => 'required|string|max:255',
+            'nomor_hp'          => 'required|string|max:20',
             'alamat_pengiriman' => 'required|string',
         ]);
 
@@ -100,6 +102,7 @@ class KeranjangController extends Controller
                 $transaksi = Transaksi::create([
                     'user_id'           => Auth::id(),
                     'nama_pembeli'      => $request->nama_pembeli,
+                    'nomor_hp'          => $request->nomor_hp,
                     'alamat_pengiriman' => $request->alamat_pengiriman,
                     'total_harga'       => $total,
                     'status'            => 'pending',
@@ -116,6 +119,13 @@ class KeranjangController extends Controller
                     Barang::where('id', $item->barang_id)->decrement('stok', $item->jumlah);
                     $item->delete();
                 }
+
+                Notifikasi::create([
+                    'user_id'      => Auth::id(),
+                    'transaksi_id' => $transaksi->id,
+                    'judul'        => 'Pesanan Diterima ✅',
+                    'pesan'        => 'Pesanan #INV-' . str_pad($transaksi->id, 5, '0', STR_PAD_LEFT) . ' senilai Rp ' . number_format($total) . ' sudah kami terima dan akan segera diproses.',
+                ]);
 
                 return $total;
             });

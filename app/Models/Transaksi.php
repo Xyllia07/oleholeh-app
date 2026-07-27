@@ -13,6 +13,7 @@ class Transaksi extends Model
     protected $fillable = [
         'user_id',
         'nama_pembeli',
+        'nomor_hp',
         'alamat_pengiriman',
         'total_harga',
         'status',
@@ -26,5 +27,10 @@ class Transaksi extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function notifikasis(): HasMany
+    {
+        return $this->hasMany(Notifikasi::class, 'transaksi_id');
     }
 }

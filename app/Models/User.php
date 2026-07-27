@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Transaksi::class, 'user_id');
     }
+
+    public function notifikasis(): HasMany
+    {
+        return $this->hasMany(Notifikasi::class, 'user_id');
+    }
 }

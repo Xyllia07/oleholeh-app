@@ -118,15 +118,41 @@
 
     <div class="flex items-center gap-4">
         <a href="/katalog" class="hidden sm:inline text-label-md font-bold text-on-surface-variant hover:text-primary transition-colors">← Belanja Lagi</a>
-        <a href="/profil" title="Edit Profil" class="squishy-interaction">
-            @if(Auth::user()->foto)
-                <img src="{{ Storage::url(Auth::user()->foto) }}" alt="Foto profil" class="w-10 h-10 rounded-full object-cover">
-            @else
-                <div class="avatar-mark" title="{{ Auth::user()->name }}">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+        <div class="relative group">
+            <button type="button" class="relative p-2 hover:bg-primary-container/20 rounded-full transition-all duration-300 inline-flex">
+                <span class="material-symbols-outlined text-primary">notifications</span>
+                @if($notifJumlahBelumDibaca > 0)
+                    <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-secondary text-white text-[10px] font-bold flex items-center justify-center">
+                        {{ $notifJumlahBelumDibaca > 9 ? '9+' : $notifJumlahBelumDibaca }}
+                    </span>
+                @endif
+            </button>
+            <div class="absolute right-0 top-full h-3 w-full"></div>
+            <div class="absolute right-0 top-full pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
+                <div class="w-80 bg-white rounded-xl shadow-xl border border-surface-container-high p-2 max-h-96 overflow-y-auto">
+                    <div class="px-3 py-2 flex items-center justify-between">
+                        <span class="text-label-md font-bold text-primary">Notifikasi</span>
+                        <a href="/notifikasi" class="text-label-sm text-secondary hover:underline">Lihat Semua</a>
+                    </div>
+                    @forelse($notifTerbaru as $notif)
+                        <div class="px-3 py-2.5 rounded-lg hover:bg-primary-container/10 transition-colors {{ $notif->dibaca ? '' : 'bg-primary-container/5' }}">
+                            <div class="flex items-start gap-2">
+                                @if(!$notif->dibaca)
+                                    <span class="w-2 h-2 mt-1.5 rounded-full bg-secondary shrink-0"></span>
+                                @endif
+                                <div class="min-w-0">
+                                    <p class="text-label-sm font-bold text-on-surface">{{ $notif->judul }}</p>
+                                    <p class="text-label-sm text-on-surface-variant line-clamp-2">{{ $notif->pesan }}</p>
+                                    <p class="text-[10px] text-on-surface-variant/70 mt-1">{{ $notif->created_at->diffForHumans() }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="px-3 py-6 text-center text-on-surface-variant text-label-sm">Belum ada notifikasi.</div>
+                    @endforelse
                 </div>
-            @endif
-        </a>
+            </div>
+        </div>
     </div>
 </nav>
 
@@ -214,6 +240,10 @@
                         <input class="input-pill" name="nama_pembeli" value="{{ old('nama_pembeli') }}" placeholder="Masukkan nama lengkap..." type="text" required>
                     </div>
                     <div class="space-y-2">
+                        <label class="text-label-md ml-4">Nomor HP</label>
+                        <input class="input-pill" name="nomor_hp" value="{{ old('nomor_hp') }}" placeholder="Contoh: 0812-3456-7890" type="tel" inputmode="numeric" required>
+                    </div>
+                    <div class="space-y-2">
                         <label class="text-label-md ml-4">Alamat Lengkap</label>
                         <textarea class="w-full px-6 py-4 rounded-lg bg-surface-container-low border-none focus:ring-2 focus:ring-primary transition-all text-on-surface placeholder:text-outline resize-none" name="alamat_pengiriman" placeholder="Tulis alamat detail pengiriman..." rows="3" required>{{ old('alamat_pengiriman') }}</textarea>
                     </div>
@@ -260,39 +290,31 @@
 
 <!-- Footer -->
 <footer class="bg-surface-container-low py-xl mt-24">
-    <div class="max-w-7xl mx-auto px-md grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg text-center md:text-left">
+    <div class="max-w-7xl mx-auto px-md grid grid-cols-1 md:grid-cols-2 gap-lg text-center md:text-left">
         <div>
             <h3 class="text-headline-md font-black text-primary mb-4">PaluKita</h3>
             <p class="text-body-md text-on-surface-variant">Toko oleh-oleh favoritmu yang menghadirkan keajaiban Sulawesi Tengah langsung ke depan pintu rumahmu.</p>
         </div>
         <div>
-            <h4 class="font-bold mb-4">Layanan Pelanggan</h4>
+            <h4 class="font-bold mb-4">Hubungi Kami</h4>
             <ul class="space-y-2 text-label-md text-on-surface-variant">
-                <li><a class="hover:text-primary transition-colors underline" href="#">Shipping Info</a></li>
-                <li><a class="hover:text-primary transition-colors underline" href="#">Contact Us</a></li>
-                <li><a class="hover:text-primary transition-colors underline" href="#">FAQ</a></li>
+                <li class="flex items-center justify-center md:justify-start gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">location_on</span>
+                    Jl. Diponegoro No. 10, Palu, Sulawesi Tengah
+                </li>
+                <li class="flex items-center justify-center md:justify-start gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">call</span>
+                    0812-3456-7890 (WhatsApp)
+                </li>
+                <li class="flex items-center justify-center md:justify-start gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">mail</span>
+                    halo@palukita.id
+                </li>
             </ul>
         </div>
-        <div>
-            <h4 class="font-bold mb-4">Tentang Kami</h4>
-            <ul class="space-y-2 text-label-md text-on-surface-variant">
-                <li><a class="hover:text-primary transition-colors underline" href="#">About Us</a></li>
-                <li><a class="hover:text-primary transition-colors underline" href="#">Privacy Policy</a></li>
-                <li><a class="hover:text-primary transition-colors underline" href="#">Term &amp; Conditions</a></li>
-            </ul>
-        </div>
-        <div>
-            <h4 class="font-bold mb-4">Ikuti Kami</h4>
-            <div class="flex justify-center md:justify-start gap-4">
-                <button class="w-10 h-10 rounded-full bg-primary-container text-white flex items-center justify-center hover:scale-110 transition-transform">
-                    <span class="material-symbols-outlined">share</span>
-                </button>
-                <button class="w-10 h-10 rounded-full bg-primary-container text-white flex items-center justify-center hover:scale-110 transition-transform">
-                    <span class="material-symbols-outlined">thumb_up</span>
-                </button>
-            </div>
-            <p class="mt-6 text-label-sm text-on-surface-variant italic">© {{ date('Y') }} PaluKita - Toko Oleh-Oleh Favoritmu</p>
-        </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-md mt-xl pt-lg border-t border-surface-container-high text-center text-label-sm text-on-surface-variant">
+        © {{ date('Y') }} PaluKita - Toko Oleh-Oleh Favoritmu
     </div>
 </footer>
 
