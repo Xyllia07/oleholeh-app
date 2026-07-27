@@ -295,6 +295,7 @@
                             <th class="pb-4 text-xs font-semibold uppercase tracking-wider">Harga</th>
                             <th class="pb-4 text-xs font-semibold uppercase tracking-wider">Sisa Stok</th>
                             <th class="pb-4 text-xs font-semibold uppercase tracking-wider">Status Stok</th>
+                            <th class="pb-4 text-xs font-semibold uppercase tracking-wider text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-surface-variant/50">
@@ -325,9 +326,61 @@
                                     </div>
                                 @endif
                             </td>
+                            <td class="py-4">
+                                <div class="flex items-center justify-end gap-2">
+                                    <button type="button" onclick="bukaModalEdit({{ $item->id }})" class="w-9 h-9 flex items-center justify-center rounded-full bg-primary-container/20 text-primary hover:bg-primary-container/40 transition-colors" title="Edit produk">
+                                        <span class="material-symbols-outlined text-lg">edit</span>
+                                    </button>
+                                    <form action="/admin/produk/{{ $item->id }}" method="POST" onsubmit="return confirm('Hapus &quot;{{ $item->nama_barang }}&quot; dari katalog? Tindakan ini tidak bisa dibatalkan.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-9 h-9 flex items-center justify-center rounded-full bg-error/10 text-error hover:bg-error/20 transition-colors" title="Hapus produk">
+                                            <span class="material-symbols-outlined text-lg">delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- Modal Edit: khusus item ini -->
+                                <div id="modal-edit-{{ $item->id }}" class="hidden fixed inset-0 z-[60] items-center justify-center bg-black/50 p-4">
+                                    <div class="bg-surface-container-lowest rounded-xl soft-shadow w-full max-w-md p-lg max-h-[90vh] overflow-y-auto">
+                                        <div class="flex items-center justify-between mb-lg">
+                                            <h4 class="text-lg text-primary font-bold">Edit Barang</h4>
+                                            <button type="button" onclick="tutupModalEdit({{ $item->id }})" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
+                                                <span class="material-symbols-outlined text-on-surface-variant">close</span>
+                                            </button>
+                                        </div>
+                                        <form action="/admin/produk/{{ $item->id }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+                                            @csrf
+                                            <div>
+                                                <label class="block text-xs font-semibold text-on-surface-variant mb-1">Nama Varian Oleh-Oleh</label>
+                                                <input type="text" name="nama_barang" required value="{{ $item->nama_barang }}" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-xs font-semibold text-on-surface-variant mb-1">Harga Jual (Rp)</label>
+                                                    <input type="number" name="harga" required min="1000" value="{{ $item->harga }}" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-xs font-semibold text-on-surface-variant mb-1">Jumlah Stok</label>
+                                                    <input type="number" name="stok" required min="0" value="{{ $item->stok }}" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-semibold text-on-surface-variant mb-1">Deskripsi (opsional)</label>
+                                                <textarea name="deskripsi" rows="2" class="w-full bg-surface-container rounded-xl py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">{{ $item->deskripsi }}</textarea>
+                                            </div>
+                                            <div>
+                                                <label class="block text-xs font-semibold text-on-surface-variant mb-1">Foto Barang (opsional, kosongkan jika tidak diganti)</label>
+                                                <input type="file" name="foto" accept="image/*" class="w-full text-sm">
+                                            </div>
+                                            <button type="submit" class="w-full bg-primary text-on-primary py-3 rounded-full text-sm font-semibold hover:scale-[1.01] active:scale-95 transition-transform">Simpan Perubahan</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                         @empty
-                        <tr><td colspan="4" class="py-8 text-center text-on-surface-variant text-sm">Belum ada barang. Tambahkan lewat form di bawah.</td></tr>
+                        <tr><td colspan="5" class="py-8 text-center text-on-surface-variant text-sm">Belum ada barang. Tambahkan lewat form di bawah.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -410,6 +463,22 @@
 </a>
 
 <script>
+    // Buka/tutup modal edit produk per-item
+    function bukaModalEdit(id) {
+        document.getElementById('modal-edit-' + id)?.classList.remove('hidden');
+        document.getElementById('modal-edit-' + id)?.classList.add('flex');
+    }
+    function tutupModalEdit(id) {
+        document.getElementById('modal-edit-' + id)?.classList.add('hidden');
+        document.getElementById('modal-edit-' + id)?.classList.remove('flex');
+    }
+    // Tutup modal kalau klik area luar (backdrop)
+    document.querySelectorAll('[id^="modal-edit-"]').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.classList.add('hidden');
+        });
+    });
+
     // Filter tabel katalog secara live berdasarkan nama produk
     const inputCari = document.getElementById('cari-katalog');
     const baris = document.querySelectorAll('#tabel-katalog tbody tr');

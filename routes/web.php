@@ -46,6 +46,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/pelanggan', [AdminTransaksiController::class, 'pelanggan']);
     Route::get('/admin/laporan', [AdminTransaksiController::class, 'laporan']);
     Route::post('/admin/produk/tambah', [AdminTransaksiController::class, 'tambahProduk']);
+    Route::post('/admin/produk/{barang}', [AdminTransaksiController::class, 'updateProduk']);
+    Route::delete('/admin/produk/{barang}', [AdminTransaksiController::class, 'hapusProduk']);
     Route::post('/admin/transaksi/input', [AdminTransaksiController::class, 'inputTransaksi']);
     Route::post('/admin/transaksi/{transaksi}/proses', [AdminTransaksiController::class, 'prosesPesanan']);
 });

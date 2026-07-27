@@ -163,6 +163,33 @@ class AdminTransaksiController extends Controller implements HasMiddleware
         return redirect('/admin/dashboard')->with('success_produk', 'Barang oleh-oleh baru berhasil ditambahkan!');
     }
 
+    public function updateProduk(Request $request, Barang $barang)
+    {
+        $validated = $request->validate([
+            'nama_barang' => 'required|string|max:255',
+            'harga'       => 'required|integer|min:1000',
+            'stok'        => 'required|integer|min:0',
+            'deskripsi'   => 'nullable|string',
+            'foto'        => 'nullable|image|max:2048',
+        ]);
+
+        if ($request->hasFile('foto')) {
+            $validated['foto'] = $request->file('foto')->store('barang', 'public');
+        }
+
+        $barang->update($validated);
+
+        return redirect('/admin/dashboard#katalog-inventory')->with('success_produk', 'Barang "' . $barang->nama_barang . '" berhasil diperbarui!');
+    }
+
+    public function hapusProduk(Barang $barang)
+    {
+        $nama = $barang->nama_barang;
+        $barang->delete();
+
+        return redirect('/admin/dashboard#katalog-inventory')->with('success_produk', 'Barang "' . $nama . '" berhasil dihapus dari katalog.');
+    }
+
     public function inputTransaksi(Request $request)
     {
         $request->validate([
