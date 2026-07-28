@@ -94,8 +94,8 @@
 <!-- Top Navigation Bar -->
 <nav class="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl rounded-full bg-surface/90 backdrop-blur-md shadow-lg z-50 flex justify-between items-center px-lg py-sm">
     <a href="/katalog" class="flex items-center gap-2">
-        <span class="brand-logo-mark">P</span>
-        <span class="text-headline-md font-black text-primary">PaluKita</span>
+        <img src="{{ asset('images/logo-palukita.png') }}" alt="PaluKita" class="w-10 h-10 rounded-full flex-shrink-0">
+        <span class="text-headline-md font-black text-primary">PaluKita ✨</span>
     </a>
 
     <!-- Progress Indicator -->

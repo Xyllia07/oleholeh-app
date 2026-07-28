@@ -130,8 +130,8 @@
         <!-- Header -->
         <div class="flex flex-col items-center text-center mb-lg">
             <div class="flex items-center gap-sm mb-sm">
-                <span class="brand-logo-mark">P</span>
-                <span class="text-headline-md font-black text-primary">PaluKita</span>
+                <img src="{{ asset('images/logo-palukita.png') }}" alt="PaluKita" class="w-10 h-10 rounded-full flex-shrink-0">
+                <span class="text-headline-md font-black text-primary">PaluKita ✨</span>
             </div>
             <h1 class="text-headline-lg font-black text-primary">Daftar Akun Pembeli</h1>
             <p class="text-body-md text-on-surface-variant mt-1">Yuk, buat akun untuk mulai belanja oleh-oleh khas Palu! ✨</p>

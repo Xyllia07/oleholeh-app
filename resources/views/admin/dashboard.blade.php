@@ -78,7 +78,7 @@
 <!-- Sidebar -->
 <aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest shadow-[20px_0_40px_rgba(126,34,206,0.08)] rounded-r-lg z-50 flex flex-col py-lg overflow-y-auto scrollbar-hide">
     <div class="px-lg mb-xl flex items-center gap-3">
-        <div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-display font-extrabold text-lg">PK</div>
+        <img src="{{ asset('images/logo-palukita.png') }}" alt="PaluKita" class="w-12 h-12 rounded-full flex-shrink-0">
         <div>
             <h1 class="text-2xl text-primary font-extrabold leading-tight">PaluKita</h1>
             <p class="text-xs text-on-surface-variant opacity-70 font-semibold">Souvenir Admin</p>

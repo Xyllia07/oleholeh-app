@@ -94,7 +94,7 @@
 
 <header class="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 rounded-full glass-nav shadow-lg px-md py-sm flex justify-between items-center transition-all duration-300">
     <div class="flex items-center gap-sm">
-        <span class="brand-logo-mark">P</span>
+        <img src="{{ asset('images/logo-palukita.png') }}" alt="PaluKita" class="w-10 h-10 rounded-full flex-shrink-0">
         <span class="text-headline-md font-headline-md text-primary font-black">PaluKita ✨</span>
     </div>
     <nav class="flex items-center gap-md">

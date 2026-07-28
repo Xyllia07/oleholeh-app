@@ -136,7 +136,7 @@
 <!-- Mascot Badge -->
 <div class="relative mb-md">
 <div class="w-24 h-24 bg-[#F3E8FF] rounded-full flex items-center justify-center overflow-hidden border-4 border-white">
-<img alt="PaluKita Mascot Emblem Logo" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLv7trBjV2UQ3gtALl0EcGEOZxCcAxZ-tlN0A-DN49Bw5C2QaGBoz5AbLQw98se0pKOVE_05QgIh-tzLengRD2nn1NUCYcnzigI00AxiAsy6s6MmozaDUleDuJ-x_aVLa-w3f9qLIy66emx0mapf6Tl8FPf5rSI2jbxsuZO1yMDi-j5AUSvSK8Z2WE8qSlasYaMylbRxLegZplNLSvRphvQ0_y8GTac4-sMZ1xDeBKs2gLF4QipVDrogDg"/>
+<img alt="PaluKita Logo" class="w-full h-full object-contain" src="{{ asset('images/logo-palukita.png') }}"/>
 </div>
 <div class="absolute top-0 -right-2 bg-[#F472B6] text-white p-1 rounded-full border-2 border-white float-animation">
 <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">star</span>

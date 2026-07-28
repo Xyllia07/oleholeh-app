@@ -101,8 +101,8 @@
 <!-- TopNavBar -->
 <header class="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 rounded-full glass-nav shadow-lg px-md py-sm flex justify-between items-center transition-all duration-300">
     <div class="flex items-center gap-sm">
-        {{-- 1. Logo brand PaluKita (sementara pakai monogram, tinggal ganti src gambar logo asli) --}}
-        <span class="brand-logo-mark">P</span>
+        {{-- Logo brand PaluKita --}}
+        <img src="{{ asset('images/logo-palukita.png') }}" alt="PaluKita" class="w-10 h-10 rounded-full flex-shrink-0">
         <span class="text-headline-md font-headline-md text-primary font-black">PaluKita ✨</span>
     </div>
 
@@ -237,9 +237,9 @@
             </div>
         </div>
         <div class="relative z-10 md:w-2/5 flex justify-center mt-xl md:mt-0">
-            {{-- 3. Floating image belum diganti (menunggu aset baru dari kamu) --}}
+            {{-- Floating brand logo --}}
             <div class="relative w-full max-w-[320px] animate-bounce" style="animation-duration: 3s;">
-                <img class="w-full h-auto drop-shadow-2xl" src="https://lh3.googleusercontent.com/aida/AP1WRLv7trBjV2UQ3gtALl0EcGEOZxCcAxZ-tlN0A-DN49Bw5C2QaGBoz5AbLQw98se0pKOVE_05QgIh-tzLengRD2nn1NUCYcnzigI00AxiAsy6s6MmozaDUleDuJ-x_aVLa-w3f9qLIy66emx0mapf6Tl8FPf5rSI2jbxsuZO1yMDi-j5AUSvSK8Z2WE8qSlasYaMylbRxLegZplNLSvRphvQ0_y8GTac4-sMZ1xDeBKs2gLF4QipVDrogDg" alt="Floating brand logo">
+                <img class="w-full h-auto drop-shadow-2xl" src="{{ asset('images/logo-palukita.png') }}" alt="Floating brand logo">
                 <div class="absolute -bottom-4 -left-4 bg-white/20 backdrop-blur-md rounded-lg p-3 rotate-12">
                     <span class="material-symbols-outlined text-white text-3xl">redeem</span>
                 </div>
