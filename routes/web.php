@@ -9,7 +9,7 @@ use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\NotifikasiController;
 use App\Http\Controllers\PembayaranController;
 
-// 1. HALAMAN AWAL — LANGSUNG KE LOGIN
+// 1. HALAMAN AWAL — landing page publik untuk tamu, redirect ke area masing-masing untuk yang sudah login
 Route::get('/', function () {
     if (auth()->check()) {
         return auth()->user()->role === 'admin'
@@ -17,7 +17,7 @@ Route::get('/', function () {
             : redirect('/katalog');
     }
 
-    return redirect('/login');
+    return view('welcome');
 });
 
 // 2. JALUR AUTENTIKASI (LOGIN & REGISTER)

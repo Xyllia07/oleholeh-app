@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PaluKita - Toko Oleh-Oleh Favoritmu</title>
+<meta name="description" content="Belanja oleh-oleh khas Palu: makanan & camilan, kain tenun Donggala, hingga kerajinan kayu Eboni langsung dari pengrajin lokal.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PaluKita">
+<meta property="og:title" content="PaluKita - Toko Oleh-Oleh Favoritmu">
+<meta property="og:description" content="Belanja oleh-oleh khas Palu: makanan & camilan, kain tenun Donggala, hingga kerajinan kayu Eboni langsung dari pengrajin lokal.">
+<meta property="og:image" content="{{ asset('images/logo-palukita.png') }}">
+<meta name="twitter:card" content="summary_large_image">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
@@ -94,6 +101,15 @@
         font-size: 16px;
         flex-shrink: 0;
     }
+    #mobile-menu-panel {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height .3s ease;
+    }
+    #mobile-menu-panel.open {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
 </style>
 </head>
 <body class="text-on-surface">
@@ -106,13 +122,20 @@
         <span class="text-headline-md font-headline-md text-primary font-black">PaluKita ✨</span>
     </div>
 
-    <div class="hidden md:flex flex-1 mx-xl">
+    <form action="/katalog" method="GET" class="hidden md:flex flex-1 mx-xl">
+        @if($kategoriAktif)
+            <input type="hidden" name="kategori" value="{{ $kategoriAktif }}">
+        @endif
         <div class="relative w-full">
-            <input class="w-full bg-surface-container-low border-2 border-transparent focus:border-primary rounded-full px-lg py-2 text-label-md outline-none transition-all duration-300" placeholder="Cari bawang goreng, kain tenun, souvenir... 🔍" type="text">
+            <input class="w-full bg-surface-container-low border-2 border-transparent focus:border-primary rounded-full px-lg py-2 text-label-md outline-none transition-all duration-300" placeholder="Cari bawang goreng, kain tenun, souvenir... 🔍" type="text" name="cari" value="{{ $kataCari }}">
         </div>
-    </div>
+    </form>
 
     <nav class="flex items-center gap-md">
+        {{-- Tombol menu mobile: search & kategori dipindah ke sini di layar kecil --}}
+        <button type="button" id="mobile-menu-toggle" class="lg:hidden p-2 hover:bg-primary-container/20 rounded-full transition-all duration-300 squishy-interaction inline-flex" aria-label="Buka menu" aria-expanded="false" aria-controls="mobile-menu-panel">
+            <span class="material-symbols-outlined text-primary" id="mobile-menu-icon">menu</span>
+        </button>
         <div class="hidden lg:flex items-center gap-sm">
             <a class="text-primary font-bold border-b-2 border-primary px-2 py-1 text-label-md" href="/katalog">Beranda</a>
             <div class="relative group">
@@ -201,6 +224,65 @@
     </nav>
 </header>
 
+{{-- Panel menu mobile: muncul di bawah navbar saat tombol hamburger ditekan (khusus layar < lg) --}}
+<div id="mobile-menu-panel" class="lg:hidden fixed top-[76px] left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-40 rounded-lg glass-nav shadow-lg">
+    <div class="p-md space-y-md">
+        <form action="/katalog" method="GET" class="md:hidden">
+            @if($kategoriAktif)
+                <input type="hidden" name="kategori" value="{{ $kategoriAktif }}">
+            @endif
+            <div class="relative w-full">
+                <input class="w-full bg-surface-container-low border-2 border-transparent focus:border-primary rounded-full px-lg py-2 text-label-md outline-none transition-all duration-300" placeholder="Cari bawang goreng, kain tenun, souvenir... 🔍" type="text" name="cari" value="{{ $kataCari }}">
+            </div>
+        </form>
+
+        <div>
+            <p class="text-label-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">Kategori</p>
+            <div class="flex flex-col gap-1">
+                <a href="/katalog#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md {{ !$kategoriAktif ? 'bg-primary-container/10 text-primary' : '' }}">
+                    <span class="material-symbols-outlined text-lg">apps</span> Semua Produk
+                </a>
+                <a href="/katalog?kategori=makanan_camilan#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md {{ $kategoriAktif === 'makanan_camilan' ? 'bg-primary-container/10 text-primary' : '' }}">
+                    <span class="material-symbols-outlined text-lg">bakery_dining</span> Makanan &amp; Camilan
+                </a>
+                <a href="/katalog?kategori=kain_tenun#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md {{ $kategoriAktif === 'kain_tenun' ? 'bg-primary-container/10 text-primary' : '' }}">
+                    <span class="material-symbols-outlined text-lg">checkroom</span> Kain &amp; Tenun
+                </a>
+                <a href="/katalog?kategori=kerajinan_souvenir#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md {{ $kategoriAktif === 'kerajinan_souvenir' ? 'bg-primary-container/10 text-primary' : '' }}">
+                    <span class="material-symbols-outlined text-lg">redeem</span> Kerajinan &amp; Souvenir
+                </a>
+            </div>
+        </div>
+
+        <div class="border-t border-surface-container-high pt-md">
+            <p class="text-label-sm font-bold text-on-surface-variant uppercase tracking-wider mb-2">Akun</p>
+            <div class="flex flex-col gap-1">
+                <a href="/pesanan-saya" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md">
+                    <span class="material-symbols-outlined text-lg">local_shipping</span> Pesanan Saya
+                </a>
+                <a href="/keranjang" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md">
+                    <span class="material-symbols-outlined text-lg">shopping_cart</span> Keranjang
+                </a>
+                <a href="/notifikasi" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md">
+                    <span class="material-symbols-outlined text-lg">notifications</span> Notifikasi
+                    @if($notifJumlahBelumDibaca > 0)
+                        <span class="ml-auto min-w-[18px] h-[18px] px-1 rounded-full bg-secondary text-white text-[10px] font-bold flex items-center justify-center">{{ $notifJumlahBelumDibaca > 9 ? '9+' : $notifJumlahBelumDibaca }}</span>
+                    @endif
+                </a>
+                <a href="/profil" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md">
+                    <span class="material-symbols-outlined text-lg">person</span> Profil (Hi, {{ explode(' ', Auth::user()->name)[0] }})
+                </a>
+                <form action="/logout" method="POST">
+                    @csrf
+                    <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-red-50 text-red-600 transition-colors text-label-md text-left">
+                        <span class="material-symbols-outlined text-lg">logout</span> Keluar
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <main class="max-w-7xl mx-auto px-container-padding pt-[120px] pb-xl">
 
     @if(session('success_beli'))
@@ -261,6 +343,19 @@
             <span class="inline-flex items-center gap-1.5 bg-primary text-white font-bold text-label-sm px-4 py-1.5 rounded-full">
                 {{ $labelKategoriAktif }}
                 <a href="/katalog#produk" class="hover:opacity-70" title="Hapus filter">
+                    <span class="material-symbols-outlined text-sm">close</span>
+                </a>
+            </span>
+        </div>
+    @endif
+
+    {{-- Chip penanda kata pencarian yang sedang aktif --}}
+    @if($kataCari !== '')
+        <div class="flex items-center gap-2 mb-md">
+            <span class="text-on-surface-variant text-label-md">Hasil pencarian untuk:</span>
+            <span class="inline-flex items-center gap-1.5 bg-secondary text-white font-bold text-label-sm px-4 py-1.5 rounded-full">
+                "{{ $kataCari }}"
+                <a href="{{ $kategoriAktif ? '/katalog?kategori=' . $kategoriAktif . '#produk' : '/katalog#produk' }}" class="hover:opacity-70" title="Hapus pencarian">
                     <span class="material-symbols-outlined text-sm">close</span>
                 </a>
             </span>
@@ -384,7 +479,13 @@
         </div>
         @empty
         <p class="col-span-full text-center text-on-surface-variant py-xl">
-            {{ $kategoriAktif ? 'Belum ada produk di kategori ini.' : 'Belum ada produk tersedia.' }}
+            @if($kataCari !== '')
+                Tidak ada produk yang cocok dengan pencarian "{{ $kataCari }}".
+            @elseif($kategoriAktif)
+                Belum ada produk di kategori ini.
+            @else
+                Belum ada produk tersedia.
+            @endif
         </p>
         @endforelse
     </section>
@@ -448,6 +549,16 @@
             tutupModalProduk(id);
         }
     }
+
+    // Toggle panel menu mobile (hamburger)
+    const menuToggle = document.getElementById('mobile-menu-toggle');
+    const menuPanel = document.getElementById('mobile-menu-panel');
+    const menuIcon = document.getElementById('mobile-menu-icon');
+    menuToggle?.addEventListener('click', () => {
+        const isOpen = menuPanel.classList.toggle('open');
+        menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        menuIcon.textContent = isOpen ? 'close' : 'menu';
+    });
 </script>
 </body>
 </html>

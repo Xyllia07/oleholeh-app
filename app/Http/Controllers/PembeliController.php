@@ -19,11 +19,19 @@ class PembeliController extends Controller
         // /katalog?kategori=makanan_camilan — dipilih dari dropdown "Kategori" di navbar
         $kategoriAktif = request('kategori');
 
-        $all_barang = Barang::when($kategoriAktif, function ($query) use ($kategoriAktif) {
-            $query->where('kategori', $kategoriAktif);
-        })->get();
+        // Filter pencarian nama barang lewat query string, contoh:
+        // /katalog?cari=bawang+goreng — diketik lewat search bar di navbar
+        $kataCari = trim((string) request('cari'));
 
-        return view('katalog_pembeli', compact('all_barang', 'kategoriAktif'));
+        $all_barang = Barang::when($kategoriAktif, function ($query) use ($kategoriAktif) {
+                $query->where('kategori', $kategoriAktif);
+            })
+            ->when($kataCari !== '', function ($query) use ($kataCari) {
+                $query->where('nama_barang', 'like', '%' . $kataCari . '%');
+            })
+            ->get();
+
+        return view('katalog_pembeli', compact('all_barang', 'kategoriAktif', 'kataCari'));
     }
 
     // Halaman "Pesanan Saya" — daftar transaksi milik pembeli beserta status
