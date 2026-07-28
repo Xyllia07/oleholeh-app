@@ -325,8 +325,8 @@
 </footer>
 
 <script>
-    // Scroll-reveal: elemen ber-class "reveal" muncul fade+slide saat masuk viewport
-    const revealTargets = document.querySelectorAll('.reveal');
+    // Scroll-reveal: elemen ber-class "reveal" atau "reveal-stagger" muncul fade+slide saat masuk viewport
+    const revealTargets = document.querySelectorAll('.reveal, .reveal-stagger');
     if ('IntersectionObserver' in window && revealTargets.length) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
