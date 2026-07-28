@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Barang;
 use App\Models\Keranjang;
-use App\Models\Notifikasi;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
 use Illuminate\Http\Request;
@@ -86,7 +85,7 @@ class KeranjangController extends Controller
         }
 
         try {
-            $totalHarga = DB::transaction(function () use ($items, $request) {
+            $transaksi = DB::transaction(function () use ($items, $request) {
                 $total = 0;
 
                 // Kunci & validasi stok semua barang di keranjang dulu sebelum diproses
@@ -99,13 +98,16 @@ class KeranjangController extends Controller
                     $total += $barang->harga * $item->jumlah;
                 }
 
+                $jamBatasWaktu = config('pembayaran.batas_waktu_jam', 3);
+
                 $transaksi = Transaksi::create([
-                    'user_id'           => Auth::id(),
-                    'nama_pembeli'      => $request->nama_pembeli,
-                    'nomor_hp'          => $request->nomor_hp,
-                    'alamat_pengiriman' => $request->alamat_pengiriman,
-                    'total_harga'       => $total,
-                    'status'            => 'pending',
+                    'user_id'                => Auth::id(),
+                    'nama_pembeli'            => $request->nama_pembeli,
+                    'nomor_hp'                => $request->nomor_hp,
+                    'alamat_pengiriman'       => $request->alamat_pengiriman,
+                    'total_harga'             => $total,
+                    'status'                  => 'menunggu_pembayaran',
+                    'batas_waktu_pembayaran'  => now()->addHours($jamBatasWaktu),
                 ]);
 
                 foreach ($items as $item) {
@@ -116,23 +118,18 @@ class KeranjangController extends Controller
                         'harga_satuan' => $item->barang->harga,
                     ]);
 
+                    // Stok dikunci di sini supaya nggak dibeli orang lain selama menunggu pembayaran.
+                    // Kalau batas waktu lewat tanpa dibayar, stok ini dikembalikan otomatis.
                     Barang::where('id', $item->barang_id)->decrement('stok', $item->jumlah);
                     $item->delete();
                 }
 
-                Notifikasi::create([
-                    'user_id'      => Auth::id(),
-                    'transaksi_id' => $transaksi->id,
-                    'judul'        => 'Pesanan Diterima ✅',
-                    'pesan'        => 'Pesanan #INV-' . str_pad($transaksi->id, 5, '0', STR_PAD_LEFT) . ' senilai Rp ' . number_format($total) . ' sudah kami terima dan akan segera diproses.',
-                ]);
-
-                return $total;
+                return $transaksi;
             });
         } catch (\RuntimeException $e) {
             return back()->with('error_keranjang', $e->getMessage());
         }
 
-        return redirect('/katalog')->with('success_beli', 'Checkout berhasil! Pesananmu senilai Rp ' . number_format($totalHarga) . ' sedang diproses.');
+        return redirect("/pembayaran/{$transaksi->id}");
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\PembeliController;
 use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\ProfilController;
 use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\PembayaranController;
 
 // 1. HALAMAN AWAL — LANGSUNG KE LOGIN
 Route::get('/', function () {
@@ -44,6 +45,10 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/keranjang/{id}', [KeranjangController::class, 'update']);
     Route::delete('/keranjang/{id}', [KeranjangController::class, 'hapus']);
     Route::post('/keranjang/checkout', [KeranjangController::class, 'checkout']);
+
+    // PEMBAYARAN — QRIS & transfer rekening, batas waktu, konfirmasi tanpa upload bukti manual
+    Route::get('/pembayaran/{transaksi}', [PembayaranController::class, 'show']);
+    Route::post('/pembayaran/{transaksi}/konfirmasi', [PembayaranController::class, 'konfirmasi']);
 
     // NOTIFIKASI PESANAN & PENGIRIMAN
     Route::get('/notifikasi', [NotifikasiController::class, 'index']);

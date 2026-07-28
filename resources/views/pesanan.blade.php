@@ -117,10 +117,6 @@
         <span class="text-headline-md font-headline-md text-primary font-black">PaluKita ✨</span>
     </div>
     <nav class="flex items-center gap-md">
-        <a href="/notifikasi" class="hidden sm:flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors text-label-md font-bold squishy-interaction">
-            <span class="material-symbols-outlined text-lg">notifications</span>
-            <span>Notifikasi</span>
-        </a>
         <a href="{{ Auth::user()->role === 'admin' ? '/admin/dashboard' : '/katalog' }}" class="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors text-label-md font-bold squishy-interaction">
             <span class="material-symbols-outlined">arrow_back</span>
             <span class="hidden sm:inline">Kembali</span>
@@ -129,6 +125,13 @@
 </header>
 
 <main class="max-w-3xl mx-auto px-container-padding pt-[120px] pb-xl">
+
+    @if(session('success_beli'))
+        <div class="mb-lg bg-green-100 text-green-800 border border-green-200 rounded-lg px-lg py-3 text-center font-semibold">🛒 {{ session('success_beli') }}</div>
+    @endif
+    @if(session('error_keranjang'))
+        <div class="mb-lg bg-red-100 text-red-800 border border-red-200 rounded-lg px-lg py-3 text-center font-semibold">⚠️ {{ session('error_keranjang') }}</div>
+    @endif
 
     <div class="mb-lg">
         <h1 class="text-headline-lg font-black text-primary flex items-center gap-2">
@@ -141,6 +144,7 @@
     {{-- Tab filter status, murni tampilan (JS di bawah yang menyaring kartu) --}}
     <div class="flex items-center gap-2 mb-lg overflow-x-auto pb-1">
         <button type="button" data-filter="semua" class="filter-tab active whitespace-nowrap px-4 py-2 rounded-full text-label-md font-bold border border-primary/20 transition-colors squishy-interaction">Semua</button>
+        <button type="button" data-filter="menunggu_pembayaran" class="filter-tab whitespace-nowrap px-4 py-2 rounded-full text-label-md font-bold border border-primary/20 text-on-surface-variant transition-colors squishy-interaction">Menunggu Pembayaran</button>
         <button type="button" data-filter="pending" class="filter-tab whitespace-nowrap px-4 py-2 rounded-full text-label-md font-bold border border-primary/20 text-on-surface-variant transition-colors squishy-interaction">Menunggu Konfirmasi</button>
         <button type="button" data-filter="diproses" class="filter-tab whitespace-nowrap px-4 py-2 rounded-full text-label-md font-bold border border-primary/20 text-on-surface-variant transition-colors squishy-interaction">Disiapkan</button>
         <button type="button" data-filter="selesai" class="filter-tab whitespace-nowrap px-4 py-2 rounded-full text-label-md font-bold border border-primary/20 text-on-surface-variant transition-colors squishy-interaction">Selesai &amp; Dikirim</button>
@@ -150,18 +154,22 @@
         @forelse($transaksis as $t)
             @php
                 $urutanStatus = ['pending' => 1, 'diproses' => 2, 'selesai' => 3];
-                $stepAktif = $urutanStatus[$t->status] ?? 1;
+                $stepAktif = $urutanStatus[$t->status] ?? 0;
 
                 $labelStatus = [
-                    'pending'  => 'Menunggu Konfirmasi',
-                    'diproses' => 'Sedang Disiapkan',
-                    'selesai'  => 'Selesai & Dikirim',
+                    'menunggu_pembayaran' => 'Menunggu Pembayaran',
+                    'pending'             => 'Menunggu Konfirmasi',
+                    'diproses'            => 'Sedang Disiapkan',
+                    'selesai'             => 'Selesai & Dikirim',
+                    'dibatalkan'          => 'Dibatalkan',
                 ][$t->status] ?? ucfirst($t->status);
 
                 $warnaBadge = [
-                    'pending'  => 'bg-amber-100 text-amber-700',
-                    'diproses' => 'bg-blue-100 text-blue-700',
-                    'selesai'  => 'bg-green-100 text-green-700',
+                    'menunggu_pembayaran' => 'bg-orange-100 text-orange-700',
+                    'pending'             => 'bg-amber-100 text-amber-700',
+                    'diproses'            => 'bg-blue-100 text-blue-700',
+                    'selesai'             => 'bg-green-100 text-green-700',
+                    'dibatalkan'          => 'bg-red-100 text-red-700',
                 ][$t->status] ?? 'bg-surface-container-high text-on-surface-variant';
             @endphp
             <div id="pesanan-{{ $t->id }}" data-status="{{ $t->status }}" class="order-card bg-white rounded-lg p-lg shadow-[0_10px_30px_rgba(126,34,206,0.05)] border border-surface-container-high">
@@ -174,6 +182,13 @@
                     </div>
                     <span class="text-label-sm font-bold px-3 py-1 rounded-full {{ $warnaBadge }}">{{ $labelStatus }}</span>
                 </div>
+
+                @if($t->status === 'menunggu_pembayaran')
+                    <a href="/pembayaran/{{ $t->id }}" class="inline-flex items-center gap-1 text-label-sm font-bold text-white bg-primary px-4 py-2 rounded-full mb-md squishy-interaction">
+                        <span class="material-symbols-outlined text-base">qr_code_2</span>
+                        Lanjutkan Pembayaran
+                    </a>
+                @endif
 
                 {{-- Stepper progres status pesanan --}}
                 <div class="flex items-center mb-md">

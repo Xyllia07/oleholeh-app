@@ -17,6 +17,13 @@ class Transaksi extends Model
         'alamat_pengiriman',
         'total_harga',
         'status',
+        'batas_waktu_pembayaran',
+        'dibayar_at',
+    ];
+
+    protected $casts = [
+        'batas_waktu_pembayaran' => 'datetime',
+        'dibayar_at'             => 'datetime',
     ];
 
     public function details(): HasMany
