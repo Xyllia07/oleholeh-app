@@ -35,6 +35,25 @@ class NotifikasiController extends Controller
         return back();
     }
 
+    // Dipanggil saat notifikasi DIKLIK (dari dropdown lonceng maupun halaman
+    // Notifikasi Saya): tandai sudah dibaca lalu langsung arahkan ke pesanan
+    // terkait di halaman "Pesanan Saya" supaya user bisa lihat status
+    // pesanannya (disiapkan / selesai & dikirim).
+    public function buka(Notifikasi $notifikasi)
+    {
+        if ($notifikasi->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $notifikasi->update(['dibaca' => true]);
+
+        if ($notifikasi->transaksi_id) {
+            return redirect('/pesanan-saya#pesanan-' . $notifikasi->transaksi_id);
+        }
+
+        return redirect('/pesanan-saya');
+    }
+
     // Tandai semua notifikasi milik user sebagai sudah dibaca
     public function tandaiSemuaDibaca(Request $request)
     {

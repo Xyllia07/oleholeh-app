@@ -307,7 +307,22 @@
                                             <span class="material-symbols-outlined text-on-surface-variant">redeem</span>
                                         @endif
                                     </div>
-                                    <span class="text-sm font-bold text-on-surface">{{ $item->nama_barang }}</span>
+                                    <span class="text-sm font-bold text-on-surface">
+                                        {{ $item->nama_barang }}
+                                        <br>
+                                        @php
+                                            $labelKategori = [
+                                                'makanan_camilan'   => 'Makanan & Camilan',
+                                                'kain_tenun'        => 'Kain & Tenun',
+                                                'kerajinan_souvenir'=> 'Kerajinan & Souvenir',
+                                            ][$item->kategori] ?? null;
+                                        @endphp
+                                        @if($labelKategori)
+                                            <span class="text-[10px] font-semibold text-primary bg-primary-container/10 px-2 py-0.5 rounded-full">{{ $labelKategori }}</span>
+                                        @else
+                                            <span class="text-[10px] font-semibold text-error bg-error/10 px-2 py-0.5 rounded-full">Belum ada kategori</span>
+                                        @endif
+                                    </span>
                                 </div>
                             </td>
                             <td class="py-4 text-on-surface font-bold text-sm">Rp {{ number_format($item->harga) }}</td>
@@ -367,6 +382,15 @@
                                                 <textarea name="deskripsi" rows="2" class="w-full bg-surface-container rounded-xl py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">{{ $item->deskripsi }}</textarea>
                                             </div>
                                             <div>
+                                                <label class="block text-xs font-semibold text-on-surface-variant mb-1">Kategori</label>
+                                                <select name="kategori" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
+                                                    <option value="" {{ !$item->kategori ? 'selected' : '' }}>— Pilih kategori —</option>
+                                                    <option value="makanan_camilan" {{ $item->kategori === 'makanan_camilan' ? 'selected' : '' }}>Makanan &amp; Camilan</option>
+                                                    <option value="kain_tenun" {{ $item->kategori === 'kain_tenun' ? 'selected' : '' }}>Kain &amp; Tenun</option>
+                                                    <option value="kerajinan_souvenir" {{ $item->kategori === 'kerajinan_souvenir' ? 'selected' : '' }}>Kerajinan &amp; Souvenir</option>
+                                                </select>
+                                            </div>
+                                            <div>
                                                 <label class="block text-xs font-semibold text-on-surface-variant mb-1">Foto Barang (opsional, kosongkan jika tidak diganti)</label>
                                                 <input type="file" name="foto" accept="image/*" class="w-full text-sm">
                                             </div>
@@ -407,6 +431,15 @@
                     <div>
                         <label class="block text-xs font-semibold text-on-surface-variant mb-1">Deskripsi (opsional)</label>
                         <textarea name="deskripsi" rows="2" placeholder="Deskripsi singkat barang" class="w-full bg-surface-container rounded-xl py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-on-surface-variant mb-1">Kategori</label>
+                        <select name="kategori" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
+                            <option value="">— Pilih kategori —</option>
+                            <option value="makanan_camilan">Makanan &amp; Camilan</option>
+                            <option value="kain_tenun">Kain &amp; Tenun</option>
+                            <option value="kerajinan_souvenir">Kerajinan &amp; Souvenir</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-on-surface-variant mb-1">Foto Barang (opsional)</label>

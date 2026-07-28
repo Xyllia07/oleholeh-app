@@ -170,6 +170,7 @@ class AdminTransaksiController extends Controller implements HasMiddleware
             'harga'       => 'required|integer|min:1000',
             'stok'        => 'required|integer|min:0',
             'deskripsi'   => 'nullable|string',
+            'kategori'    => 'nullable|in:makanan_camilan,kain_tenun,kerajinan_souvenir',
             'foto'        => 'nullable|image|max:2048',
         ]);
 
@@ -189,6 +190,7 @@ class AdminTransaksiController extends Controller implements HasMiddleware
             'harga'       => 'required|integer|min:1000',
             'stok'        => 'required|integer|min:0',
             'deskripsi'   => 'nullable|string',
+            'kategori'    => 'nullable|in:makanan_camilan,kain_tenun,kerajinan_souvenir',
             'foto'        => 'nullable|image|max:2048',
         ]);
 

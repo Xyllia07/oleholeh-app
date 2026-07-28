@@ -31,6 +31,9 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::middleware(['auth'])->group(function () {
     Route::get('/katalog', [PembeliController::class, 'index']);
 
+    // PESANAN SAYA — status pesanan pembeli (dikonfirmasi/disiapkan/selesai & dikirim)
+    Route::get('/pesanan-saya', [PembeliController::class, 'pesanan']);
+
     // EDIT PROFIL AKUN (nama, username, password, foto profil)
     Route::get('/profil', [ProfilController::class, 'edit'])->name('profil.edit');
     Route::post('/profil', [ProfilController::class, 'update'])->name('profil.update');
@@ -44,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
 
     // NOTIFIKASI PESANAN & PENGIRIMAN
     Route::get('/notifikasi', [NotifikasiController::class, 'index']);
+    Route::get('/notifikasi/{notifikasi}/buka', [NotifikasiController::class, 'buka']);
     Route::post('/notifikasi/{notifikasi}/baca', [NotifikasiController::class, 'tandaiDibaca']);
     Route::post('/notifikasi/baca-semua', [NotifikasiController::class, 'tandaiSemuaDibaca']);
 

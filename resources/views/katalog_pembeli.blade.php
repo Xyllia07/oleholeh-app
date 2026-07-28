@@ -116,7 +116,7 @@
         <div class="hidden lg:flex items-center gap-sm">
             <a class="text-primary font-bold border-b-2 border-primary px-2 py-1 text-label-md" href="/katalog">Beranda</a>
             <div class="relative group">
-                <a class="text-on-surface-variant hover:text-primary transition-colors text-label-md inline-flex items-center gap-1 px-2 py-1" href="#produk">
+                <a class="text-on-surface-variant hover:text-primary transition-colors text-label-md inline-flex items-center gap-1 px-2 py-1 {{ $kategoriAktif ? 'text-primary font-bold' : '' }}" href="{{ $kategoriAktif ? '/katalog#produk' : '#produk' }}">
                     Kategori
                     <span class="material-symbols-outlined text-base transition-transform duration-200 group-hover:rotate-180">expand_more</span>
                 </a>
@@ -124,16 +124,16 @@
                 <div class="absolute left-0 top-full h-3 w-full"></div>
                 <div class="absolute left-0 top-full pt-3 opacity-0 invisible translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-50">
                     <div class="w-56 bg-white rounded-xl shadow-xl border border-surface-container-high p-2">
-                        <a href="#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md">
+                        <a href="/katalog#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md {{ !$kategoriAktif ? 'bg-primary-container/10 text-primary' : '' }}">
                             <span class="material-symbols-outlined text-lg">apps</span> Semua Produk
                         </a>
-                        <a href="#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md">
+                        <a href="/katalog?kategori=makanan_camilan#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md {{ $kategoriAktif === 'makanan_camilan' ? 'bg-primary-container/10 text-primary' : '' }}">
                             <span class="material-symbols-outlined text-lg">bakery_dining</span> Makanan &amp; Camilan
                         </a>
-                        <a href="#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md">
+                        <a href="/katalog?kategori=kain_tenun#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md {{ $kategoriAktif === 'kain_tenun' ? 'bg-primary-container/10 text-primary' : '' }}">
                             <span class="material-symbols-outlined text-lg">checkroom</span> Kain &amp; Tenun
                         </a>
-                        <a href="#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md">
+                        <a href="/katalog?kategori=kerajinan_souvenir#produk" class="flex items-center gap-3 px-4 py-2.5 rounded-lg hover:bg-primary-container/10 hover:text-primary transition-colors text-label-md {{ $kategoriAktif === 'kerajinan_souvenir' ? 'bg-primary-container/10 text-primary' : '' }}">
                             <span class="material-symbols-outlined text-lg">redeem</span> Kerajinan &amp; Souvenir
                         </a>
                     </div>
@@ -159,7 +159,8 @@
                             <a href="/notifikasi" class="text-label-sm text-secondary hover:underline">Lihat Semua</a>
                         </div>
                         @forelse($notifTerbaru as $notif)
-                            <div class="px-3 py-2.5 rounded-lg hover:bg-primary-container/10 transition-colors {{ $notif->dibaca ? '' : 'bg-primary-container/5' }}">
+                            {{-- Notifikasi bisa diklik: langsung tandai dibaca & diarahkan ke pesanan terkait di halaman Pesanan Saya --}}
+                            <a href="/notifikasi/{{ $notif->id }}/buka" class="block px-3 py-2.5 rounded-lg hover:bg-primary-container/10 transition-colors {{ $notif->dibaca ? '' : 'bg-primary-container/5' }}">
                                 <div class="flex items-start gap-2">
                                     @if(!$notif->dibaca)
                                         <span class="w-2 h-2 mt-1.5 rounded-full bg-secondary shrink-0"></span>
@@ -170,13 +171,16 @@
                                         <p class="text-[10px] text-on-surface-variant/70 mt-1">{{ $notif->created_at->diffForHumans() }}</p>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         @empty
                             <div class="px-3 py-6 text-center text-on-surface-variant text-label-sm">Belum ada notifikasi.</div>
                         @endforelse
                     </div>
                 </div>
             </div>
+            <a href="/pesanan-saya" class="relative p-2 hover:bg-primary-container/20 rounded-full transition-all duration-300 squishy-interaction inline-flex" title="Pesanan Saya">
+                <span class="material-symbols-outlined text-primary">local_shipping</span>
+            </a>
             <a href="/keranjang" class="relative p-2 hover:bg-primary-container/20 rounded-full transition-all duration-300 squishy-interaction inline-flex">
                 <span class="material-symbols-outlined text-primary">shopping_cart</span>
             </a>
@@ -242,6 +246,26 @@
             </div>
         </div>
     </section>
+
+    {{-- Chip penanda kategori yang sedang difilter --}}
+    @if($kategoriAktif)
+        @php
+            $labelKategoriAktif = [
+                'makanan_camilan'    => 'Makanan & Camilan',
+                'kain_tenun'         => 'Kain & Tenun',
+                'kerajinan_souvenir' => 'Kerajinan & Souvenir',
+            ][$kategoriAktif] ?? $kategoriAktif;
+        @endphp
+        <div class="flex items-center gap-2 mb-md">
+            <span class="text-on-surface-variant text-label-md">Menampilkan kategori:</span>
+            <span class="inline-flex items-center gap-1.5 bg-primary text-white font-bold text-label-sm px-4 py-1.5 rounded-full">
+                {{ $labelKategoriAktif }}
+                <a href="/katalog#produk" class="hover:opacity-70" title="Hapus filter">
+                    <span class="material-symbols-outlined text-sm">close</span>
+                </a>
+            </span>
+        </div>
+    @endif
 
     <!-- Product Grid -->
     <section id="produk" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-md">
@@ -359,7 +383,9 @@
             </div>
         </div>
         @empty
-        <p class="col-span-full text-center text-on-surface-variant py-xl">Belum ada produk tersedia.</p>
+        <p class="col-span-full text-center text-on-surface-variant py-xl">
+            {{ $kategoriAktif ? 'Belum ada produk di kategori ini.' : 'Belum ada produk tersedia.' }}
+        </p>
         @endforelse
     </section>
 </main>

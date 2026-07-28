@@ -117,7 +117,8 @@
 
     <div class="space-y-md">
         @forelse($notifikasis as $notif)
-            <div class="bg-white rounded-lg p-lg shadow-[0_10px_30px_rgba(126,34,206,0.05)] border border-surface-container-high flex items-start gap-4">
+            {{-- Diklik langsung menuju pesanan terkait di halaman Pesanan Saya --}}
+            <a href="{{ $notif->transaksi_id ? '/pesanan-saya#pesanan-' . $notif->transaksi_id : '#' }}" class="bg-white rounded-lg p-lg shadow-[0_10px_30px_rgba(126,34,206,0.05)] border border-surface-container-high flex items-start gap-4 hover:border-primary/30 transition-colors">
                 <div class="w-12 h-12 rounded-full bg-primary-container/10 flex items-center justify-center shrink-0">
                     <span class="material-symbols-outlined text-primary">
                         {{ str_contains($notif->judul, 'Selesai') ? 'local_shipping' : (str_contains($notif->judul, 'Diproses') ? 'inventory_2' : 'receipt_long') }}
@@ -130,7 +131,10 @@
                     </div>
                     <p class="text-body-md text-on-surface-variant mt-1">{{ $notif->pesan }}</p>
                 </div>
-            </div>
+                @if($notif->transaksi_id)
+                    <span class="material-symbols-outlined text-on-surface-variant/40 self-center">chevron_right</span>
+                @endif
+            </a>
         @empty
             <div class="bg-white rounded-lg p-xl text-center shadow-[0_10px_30px_rgba(126,34,206,0.05)] border border-surface-container-high">
                 <span class="material-symbols-outlined text-5xl text-primary-container/40">notifications_off</span>

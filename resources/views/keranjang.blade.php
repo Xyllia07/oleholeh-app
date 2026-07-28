@@ -135,7 +135,8 @@
                         <a href="/notifikasi" class="text-label-sm text-secondary hover:underline">Lihat Semua</a>
                     </div>
                     @forelse($notifTerbaru as $notif)
-                        <div class="px-3 py-2.5 rounded-lg hover:bg-primary-container/10 transition-colors {{ $notif->dibaca ? '' : 'bg-primary-container/5' }}">
+                        {{-- Notifikasi bisa diklik: langsung tandai dibaca & diarahkan ke pesanan terkait di halaman Pesanan Saya --}}
+                        <a href="/notifikasi/{{ $notif->id }}/buka" class="block px-3 py-2.5 rounded-lg hover:bg-primary-container/10 transition-colors {{ $notif->dibaca ? '' : 'bg-primary-container/5' }}">
                             <div class="flex items-start gap-2">
                                 @if(!$notif->dibaca)
                                     <span class="w-2 h-2 mt-1.5 rounded-full bg-secondary shrink-0"></span>
@@ -146,13 +147,16 @@
                                     <p class="text-[10px] text-on-surface-variant/70 mt-1">{{ $notif->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     @empty
                         <div class="px-3 py-6 text-center text-on-surface-variant text-label-sm">Belum ada notifikasi.</div>
                     @endforelse
                 </div>
             </div>
         </div>
+        <a href="/pesanan-saya" class="relative p-2 hover:bg-primary-container/20 rounded-full transition-all duration-300 inline-flex" title="Pesanan Saya">
+            <span class="material-symbols-outlined text-primary">local_shipping</span>
+        </a>
     </div>
 </nav>
 
