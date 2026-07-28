@@ -88,7 +88,7 @@
     </a>
     <nav class="flex items-center gap-sm">
         <a href="/login" class="text-label-md font-bold text-on-surface-variant hover:text-primary transition-colors px-3 py-2 squishy-interaction">Masuk</a>
-        <a href="/register" class="bg-primary text-white text-label-md font-bold px-5 py-2.5 rounded-full shadow-md hover:bg-primary-container transition-colors squishy-interaction">Daftar Gratis</a>
+        <a href="/login" class="bg-primary text-white text-label-md font-bold px-5 py-2.5 rounded-full shadow-md hover:bg-primary-container transition-colors squishy-interaction">Daftar Gratis</a>
     </nav>
 </header>
 
@@ -112,7 +112,7 @@
                 Jelajahi kuliner gurih, Kain Tenun Donggala, hingga kerajinan kayu Eboni langsung dari pengrajin lokal — dikirim ke seluruh Indonesia.
             </p>
             <div class="pt-4 flex flex-col sm:flex-row items-center gap-3 justify-center md:justify-start">
-                <a href="/register" class="bg-[#34D399] text-white hover:bg-[#10b981] hover:scale-105 active:scale-95 transition-all duration-300 px-xl py-4 rounded-full font-bold text-lg inline-flex items-center gap-sm shadow-xl">
+                <a href="/login" class="bg-[#34D399] text-white hover:bg-[#10b981] hover:scale-105 active:scale-95 transition-all duration-300 px-xl py-4 rounded-full font-bold text-lg inline-flex items-center gap-sm shadow-xl">
                     Belanja Sekarang 🚀
                 </a>
                 <a href="/login" class="bg-white/15 text-white border border-white/40 hover:bg-white/25 transition-all duration-300 px-lg py-4 rounded-full font-bold text-lg inline-flex items-center gap-sm">
@@ -178,7 +178,7 @@
     <section class="text-center mb-xl">
         <h2 class="text-headline-md font-black text-primary mb-sm">Yuk, Mulai Belanja Oleh-Oleh Khas Palu!</h2>
         <p class="text-body-md text-on-surface-variant mb-lg max-w-xl mx-auto">Daftar sekarang, gratis, dan langsung bisa jelajahi ratusan produk oleh-oleh pilihan.</p>
-        <a href="/register" class="inline-flex items-center gap-sm bg-primary text-white font-bold px-xl py-4 rounded-full shadow-xl hover:bg-primary-container hover:scale-105 active:scale-95 transition-all duration-300">
+        <a href="/login" class="inline-flex items-center gap-sm bg-primary text-white font-bold px-xl py-4 rounded-full shadow-xl hover:bg-primary-container hover:scale-105 active:scale-95 transition-all duration-300">
             Daftar Sekarang ✨
         </a>
     </section>
