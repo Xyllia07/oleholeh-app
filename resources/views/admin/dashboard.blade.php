@@ -103,10 +103,10 @@
             <span class="material-symbols-outlined">inventory_2</span>
             <span class="text-sm font-medium">Katalog &amp; Stok</span>
         </a>
-        <a href="#tambah-produk" class="text-on-surface-variant hover:bg-surface-variant rounded-full mx-4 py-3 px-6 flex items-center gap-3 transition-all">
+        <button type="button" onclick="bukaModalTambah()" class="w-full text-left text-on-surface-variant hover:bg-surface-variant rounded-full mx-4 py-3 px-6 flex items-center gap-3 transition-all">
             <span class="material-symbols-outlined">add_circle</span>
             <span class="text-sm font-medium">Tambah Produk</span>
-        </a>
+        </button>
         <a href="/admin/pelanggan" class="text-on-surface-variant hover:bg-surface-variant rounded-full mx-4 py-3 px-6 flex items-center gap-3 transition-all">
             <span class="material-symbols-outlined">group</span>
             <span class="text-sm font-medium">Pelanggan</span>
@@ -280,9 +280,9 @@
         <section id="katalog" class="bg-surface-container-lowest p-lg rounded-xl soft-shadow overflow-hidden scroll-mt-24">
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-lg gap-4">
                 <h4 class="text-xl text-primary font-bold">Katalog Inventory</h4>
-                <a href="#tambah-produk" class="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-2 rounded-full text-sm font-semibold hover:scale-105 transition-transform">
+                <button type="button" onclick="bukaModalTambah()" class="inline-flex items-center gap-2 bg-primary text-on-primary px-6 py-2 rounded-full text-sm font-semibold hover:scale-105 transition-transform">
                     <span class="material-symbols-outlined text-base">add</span> Tambah Produk
-                </a>
+                </button>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left" id="tabel-katalog">
@@ -407,48 +407,53 @@
                 </table>
             </div>
         </section>
+    </div>
 
-        <!-- Section D: Tambah Produk -->
-        <section id="tambah-produk" class="grid grid-cols-1 lg:grid-cols-2 gap-lg scroll-mt-24">
-            <div class="bg-surface-container-lowest p-lg rounded-xl soft-shadow">
-                <h4 class="text-xl text-primary font-bold mb-lg">Tambah Master Barang</h4>
-                <form action="/admin/produk/tambah" method="POST" enctype="multipart/form-data" class="space-y-4">
-                    @csrf
-                    <div>
-                        <label class="block text-xs font-semibold text-on-surface-variant mb-1">Nama Varian Oleh-Oleh</label>
-                        <input type="text" name="nama_barang" required placeholder="Misal: Bawang Goreng Premium 250g" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-on-surface-variant mb-1">Harga Jual (Rp)</label>
-                            <input type="number" name="harga" required min="1000" placeholder="65000" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-on-surface-variant mb-1">Jumlah Stok</label>
-                            <input type="number" name="stok" required min="0" placeholder="50" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-on-surface-variant mb-1">Deskripsi (opsional)</label>
-                        <textarea name="deskripsi" rows="2" placeholder="Deskripsi singkat barang" class="w-full bg-surface-container rounded-xl py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container"></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-on-surface-variant mb-1">Kategori</label>
-                        <select name="kategori" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
-                            <option value="">— Pilih kategori —</option>
-                            <option value="makanan_camilan">Makanan &amp; Camilan</option>
-                            <option value="kain_tenun">Kain &amp; Tenun</option>
-                            <option value="kerajinan_souvenir">Kerajinan &amp; Souvenir</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-on-surface-variant mb-1">Foto Barang (opsional)</label>
-                        <input type="file" name="foto" accept="image/*" class="w-full text-sm">
-                    </div>
-                    <button type="submit" class="w-full bg-primary text-on-primary py-3 rounded-full text-sm font-semibold hover:scale-[1.01] active:scale-95 transition-transform">Simpan ke Katalog</button>
-                </form>
+    <!-- Modal Tambah Produk -->
+    <div id="modal-tambah-produk" class="hidden fixed inset-0 z-[60] items-center justify-center bg-black/50 p-4">
+        <div class="bg-surface-container-lowest rounded-xl soft-shadow w-full max-w-md p-lg max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-lg">
+                <h4 class="text-lg text-primary font-bold">Tambah Master Barang</h4>
+                <button type="button" onclick="tutupModalTambah()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
+                    <span class="material-symbols-outlined text-on-surface-variant">close</span>
+                </button>
             </div>
-        </section>
+            <form action="/admin/produk/tambah" method="POST" enctype="multipart/form-data" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-xs font-semibold text-on-surface-variant mb-1">Nama Varian Oleh-Oleh</label>
+                    <input type="text" name="nama_barang" required value="{{ old('nama_barang') }}" placeholder="Misal: Bawang Goreng Premium 250g" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-on-surface-variant mb-1">Harga Jual (Rp)</label>
+                        <input type="number" name="harga" required min="1000" value="{{ old('harga') }}" placeholder="65000" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-on-surface-variant mb-1">Jumlah Stok</label>
+                        <input type="number" name="stok" required min="0" value="{{ old('stok') }}" placeholder="50" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-on-surface-variant mb-1">Deskripsi (opsional)</label>
+                    <textarea name="deskripsi" rows="2" placeholder="Deskripsi singkat barang" class="w-full bg-surface-container rounded-xl py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">{{ old('deskripsi') }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-on-surface-variant mb-1">Kategori</label>
+                    <select name="kategori" class="w-full bg-surface-container rounded-full py-3 px-5 border-none text-sm outline-none focus:ring-2 focus:ring-primary-container">
+                        <option value="" {{ old('kategori') ? '' : 'selected' }}>— Pilih kategori —</option>
+                        <option value="makanan_camilan" {{ old('kategori') === 'makanan_camilan' ? 'selected' : '' }}>Makanan &amp; Camilan</option>
+                        <option value="kain_tenun" {{ old('kategori') === 'kain_tenun' ? 'selected' : '' }}>Kain &amp; Tenun</option>
+                        <option value="kerajinan_souvenir" {{ old('kategori') === 'kerajinan_souvenir' ? 'selected' : '' }}>Kerajinan &amp; Souvenir</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-on-surface-variant mb-1">Foto Barang (opsional)</label>
+                    <input type="file" name="foto" accept="image/*" class="w-full text-sm">
+                </div>
+                <button type="submit" class="w-full bg-primary text-on-primary py-3 rounded-full text-sm font-semibold hover:scale-[1.01] active:scale-95 transition-transform">Simpan ke Katalog</button>
+            </form>
+        </div>
     </div>
 
     <footer class="w-full pl-lg pr-lg py-lg flex flex-col md:flex-row justify-between items-center gap-2 border-t border-outline-variant/30 mt-auto opacity-80">
@@ -458,9 +463,9 @@
 </main>
 
 <!-- FAB -->
-<a href="#tambah-produk" class="fixed bottom-lg right-lg w-16 h-16 bg-primary-container text-on-primary-container rounded-full soft-shadow hover:scale-110 active:scale-95 transition-all flex items-center justify-center z-50">
+<button type="button" onclick="bukaModalTambah()" class="fixed bottom-lg right-lg w-16 h-16 bg-primary-container text-on-primary-container rounded-full soft-shadow hover:scale-110 active:scale-95 transition-all flex items-center justify-center z-50" title="Tambah produk baru">
     <span class="material-symbols-outlined text-3xl">add</span>
-</a>
+</button>
 
 <script>
     // Buka/tutup modal edit produk per-item
@@ -478,6 +483,24 @@
             if (e.target === modal) modal.classList.add('hidden');
         });
     });
+
+    // Buka/tutup modal Tambah Produk
+    function bukaModalTambah() {
+        document.getElementById('modal-tambah-produk')?.classList.remove('hidden');
+        document.getElementById('modal-tambah-produk')?.classList.add('flex');
+    }
+    function tutupModalTambah() {
+        document.getElementById('modal-tambah-produk')?.classList.add('hidden');
+        document.getElementById('modal-tambah-produk')?.classList.remove('flex');
+    }
+    document.getElementById('modal-tambah-produk')?.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) tutupModalTambah();
+    });
+    // Kalau submit-nya gagal validasi & Laravel reload halaman dengan error,
+    // buka lagi otomatis modalnya biar admin langsung lihat pesan errornya
+    @if ($errors->any() && old('nama_barang') !== null)
+        document.addEventListener('DOMContentLoaded', bukaModalTambah);
+    @endif
 
     // Filter tabel katalog secara live berdasarkan nama produk
     const inputCari = document.getElementById('cari-katalog');
