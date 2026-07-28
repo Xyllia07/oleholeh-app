@@ -110,6 +110,80 @@
         max-height: 80vh;
         overflow-y: auto;
     }
+
+    /* Hero: gradient flow + drifting sparkles (sama seperti landing page) */
+    .hero-gradient {
+        background: linear-gradient(120deg, #6200a9, #a43073, #7e22ce, #6200a9);
+        background-size: 300% 300%;
+        animation: gradient-flow 10s ease infinite;
+    }
+    @keyframes gradient-flow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    .sparkle {
+        position: absolute;
+        pointer-events: none;
+        animation: sparkle-drift 5s ease-in-out infinite, sparkle-twinkle 2.4s ease-in-out infinite;
+        opacity: 0;
+    }
+    @keyframes sparkle-drift {
+        0% { transform: translateY(0px) translateX(0px); }
+        50% { transform: translateY(-18px) translateX(6px); }
+        100% { transform: translateY(0px) translateX(0px); }
+    }
+    @keyframes sparkle-twinkle {
+        0%, 100% { opacity: 0; transform: scale(.6); }
+        50% { opacity: .9; transform: scale(1); }
+    }
+
+    /* Card masuk satu-satu waktu scroll */
+    .product-card {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity .5s cubic-bezier(.16,.84,.44,1), transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .35s ease;
+    }
+    .product-card.card-visible { opacity: 1; transform: translateY(0); }
+    .product-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(126, 34, 206, 0.12);
+    }
+
+    /* Lonceng notifikasi bergoyang kalau ada yang belum dibaca */
+    .bell-ring { animation: bell-ring 2.2s ease-in-out infinite; transform-origin: top center; }
+    @keyframes bell-ring {
+        0%, 8%, 16%, 100% { transform: rotate(0deg); }
+        2% { transform: rotate(14deg); }
+        4% { transform: rotate(-12deg); }
+        6% { transform: rotate(8deg); }
+        10% { transform: rotate(-4deg); }
+    }
+
+    /* "+1" terbang ke ikon keranjang saat tambah produk */
+    .fly-to-cart {
+        position: fixed;
+        z-index: 70;
+        pointer-events: none;
+        font-size: 22px;
+        animation: fly-arc .7s cubic-bezier(.3,.6,.4,1) forwards;
+    }
+    @keyframes fly-arc {
+        0% { transform: translate(0, 0) scale(1); opacity: 1; }
+        70% { opacity: 1; }
+        100% { transform: var(--fly-end, translate(0,0)) scale(.3); opacity: 0; }
+    }
+    .cart-bump { animation: cart-bump .4s ease; }
+    @keyframes cart-bump {
+        0%, 100% { transform: scale(1); }
+        40% { transform: scale(1.35) rotate(-8deg); }
+        70% { transform: scale(.95) rotate(4deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .hero-gradient, .sparkle, .bell-ring, .fly-to-cart, .cart-bump { animation: none !important; }
+        .product-card { opacity: 1 !important; transform: none !important; }
+    }
 </style>
 </head>
 <body class="text-on-surface">
@@ -166,7 +240,7 @@
         <div class="flex items-center gap-sm">
             <div class="relative group">
                 <button type="button" class="relative p-2 hover:bg-primary-container/20 rounded-full transition-all duration-300 squishy-interaction inline-flex">
-                    <span class="material-symbols-outlined text-primary">notifications</span>
+                    <span class="material-symbols-outlined text-primary {{ $notifJumlahBelumDibaca > 0 ? 'bell-ring' : '' }}">notifications</span>
                     @if($notifJumlahBelumDibaca > 0)
                         <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-secondary text-white text-[10px] font-bold flex items-center justify-center">
                             {{ $notifJumlahBelumDibaca > 9 ? '9+' : $notifJumlahBelumDibaca }}
@@ -205,7 +279,7 @@
                 <span class="material-symbols-outlined text-primary">local_shipping</span>
             </a>
             <a href="/keranjang" class="relative p-2 hover:bg-primary-container/20 rounded-full transition-all duration-300 squishy-interaction inline-flex">
-                <span class="material-symbols-outlined text-primary">shopping_cart</span>
+                <span class="material-symbols-outlined text-primary" id="cart-icon">shopping_cart</span>
             </a>
             <a href="/profil" class="flex items-center gap-2 bg-primary-container/10 hover:bg-primary-container/20 px-3 py-1.5 rounded-full border border-primary/10 transition-colors squishy-interaction">
                 @if(Auth::user()->foto)
@@ -296,7 +370,7 @@
     @endif
 
     <!-- Hero Banner -->
-    <section class="relative mb-xl overflow-hidden rounded-xl bg-gradient-to-br from-primary to-secondary p-xl flex flex-col md:flex-row items-center justify-between min-h-[400px] shadow-2xl">
+    <section class="hero-gradient relative mb-xl overflow-hidden rounded-xl p-xl flex flex-col md:flex-row items-center justify-between min-h-[400px] shadow-2xl">
         <div class="absolute inset-0 opacity-10">
             <div class="grid grid-cols-6 gap-4 p-4 h-full w-full">
                 <span class="material-symbols-outlined text-white text-6xl">shopping_bag</span>
@@ -305,6 +379,10 @@
                 <span class="material-symbols-outlined text-white text-3xl">celebration</span>
             </div>
         </div>
+        <span class="sparkle text-white text-2xl" style="top:12%; left:8%; animation-delay:.2s, .2s;">✨</span>
+        <span class="sparkle text-white text-xl" style="top:70%; left:18%; animation-delay:1.1s, 1.1s;">⭐</span>
+        <span class="sparkle text-white text-3xl" style="top:20%; left:92%; animation-delay:.6s, .6s;">✨</span>
+        <span class="sparkle text-white text-lg" style="top:85%; left:88%; animation-delay:1.6s, 1.6s;">💫</span>
         <div class="relative z-10 md:w-3/5 text-center md:text-left space-y-md">
             <h1 class="text-headline-xl font-headline-xl text-white leading-tight">
                 Oleh-Oleh Khas Palu Terlengkap &amp; Paling Imut! ✨
@@ -390,7 +468,7 @@
             $ulasanProduk = $kumpulanUlasan[$item->id % count($kumpulanUlasan)];
             $ratingRataRata = round(collect($ulasanProduk)->avg('rating'), 1);
         @endphp
-        <div class="product-card group bg-white rounded-lg p-2 shadow-[0_10px_30px_rgba(126,34,206,0.05)] transition-all duration-500 flex flex-col border border-surface-container-high cursor-pointer"
+        <div class="product-card group bg-white rounded-lg p-2 shadow-[0_10px_30px_rgba(126,34,206,0.05)] flex flex-col border border-surface-container-high cursor-pointer"
              onclick="bukaModalProduk({{ $item->id }})">
             <div class="relative rounded-lg overflow-hidden mb-2 aspect-square bg-surface-container-low">
                 @if($item->foto)
@@ -446,7 +524,7 @@
                 </div>
 
                 @if($item->stok > 0)
-                    <form action="/keranjang/tambah/{{ $item->id }}" method="POST" class="mb-lg">
+                    <form action="/keranjang/tambah/{{ $item->id }}" method="POST" class="mb-lg add-to-cart-form">
                         @csrf
                         <div class="flex gap-2">
                             <input type="number" name="jumlah" value="1" min="1" max="{{ $item->stok }}" class="w-24 border-2 border-surface-container-high rounded-full px-4 py-2 text-label-md outline-none focus:border-primary">
@@ -558,6 +636,59 @@
         const isOpen = menuPanel.classList.toggle('open');
         menuToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
         menuIcon.textContent = isOpen ? 'close' : 'menu';
+    });
+
+    // Kartu produk muncul satu-satu (fade + slide) saat masuk viewport
+    const productCards = document.querySelectorAll('.product-card');
+    if ('IntersectionObserver' in window && productCards.length) {
+        const cardObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => entry.target.classList.add('card-visible'), (entry.target.dataset.idx % 10) * 40);
+                    cardObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        productCards.forEach((el, i) => { el.dataset.idx = i; cardObserver.observe(el); });
+    } else {
+        productCards.forEach(el => el.classList.add('card-visible'));
+    }
+
+    // Animasi kecil "terbang ke keranjang" saat produk ditambahkan
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.querySelectorAll('.add-to-cart-form').forEach(form => {
+        if (reduceMotion) return; // biarkan form submit normal tanpa animasi
+        form.addEventListener('submit', function (e) {
+            const cartIcon = document.getElementById('cart-icon');
+            const button = form.querySelector('button[type="submit"]');
+            if (!cartIcon || !button || form.dataset.flying) return;
+
+            e.preventDefault();
+            form.dataset.flying = '1';
+
+            const startRect = button.getBoundingClientRect();
+            const endRect = cartIcon.getBoundingClientRect();
+            const dx = (endRect.left + endRect.width / 2) - (startRect.left + startRect.width / 2);
+            const dy = (endRect.top + endRect.height / 2) - (startRect.top + startRect.height / 2);
+
+            const flyer = document.createElement('span');
+            flyer.className = 'fly-to-cart';
+            flyer.textContent = '🛍️';
+            flyer.style.left = (startRect.left + startRect.width / 2 - 11) + 'px';
+            flyer.style.top = (startRect.top + startRect.height / 2 - 11) + 'px';
+            flyer.style.setProperty('--fly-end', `translate(${dx}px, ${dy}px)`);
+            document.body.appendChild(flyer);
+
+            setTimeout(() => {
+                cartIcon.classList.add('cart-bump');
+                cartIcon.addEventListener('animationend', () => cartIcon.classList.remove('cart-bump'), { once: true });
+            }, 550);
+
+            setTimeout(() => {
+                flyer.remove();
+                form.submit();
+            }, 650);
+        });
     });
 </script>
 </body>
