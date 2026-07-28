@@ -210,7 +210,7 @@
                                 @csrf
                                 @method('PATCH')
                                 <button type="button" class="stepper-btn qty-minus">-</button>
-                                <input type="number" name="jumlah" value="{{ $item->jumlah }}" min="1" max="{{ $item->barang->stok + $item->jumlah }}" class="w-10 text-center font-bold text-on-surface bg-transparent border-none outline-none qty-input">
+                                <input type="number" name="jumlah" value="{{ $item->jumlah }}" min="1" max="{{ $item->barang->stok + $item->jumlah }}" class="w-12 text-center font-bold text-on-surface bg-transparent border-none outline-none qty-input">
                                 <button type="button" class="stepper-btn qty-plus">+</button>
                             </form>
 
