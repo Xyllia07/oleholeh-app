@@ -10,15 +10,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('barangs', function (Blueprint $table) {
-            $table->string('kategori', 50)->nullable()->after('deskripsi');
-        });
+        if (! Schema::hasColumn('barangs', 'kategori')) {
+            Schema::table('barangs', function (Blueprint $table) {
+                $table->string('kategori', 50)->nullable()->after('deskripsi');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('barangs', function (Blueprint $table) {
-            $table->dropColumn('kategori');
-        });
+        if (Schema::hasColumn('barangs', 'kategori')) {
+            Schema::table('barangs', function (Blueprint $table) {
+                $table->dropColumn('kategori');
+            });
+        }
     }
 };
